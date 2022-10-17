@@ -11,32 +11,13 @@ a quick and easy way.
 
 * [Install Helm version 3 or later](https://helm.sh/docs/intro/install/)
 
-### Local Installation
-
-Pull the Clusterpedia repository.
-
-```bash
-git clone https://github.com/clusterpedia-io/clusterpedia-helm.git
-cd /charts/clusterpedia
-```
-
-Since Clusterpedia uses `bitnami/postgresql` and `bitnami/mysql` as subcharts of storage components, it is necessary to
-add the bitnami repository and update the dependencies of the clusterpedia chart.
-
-```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm dependency build
-```
-
-### Remote Installation
-
 First, add the Clusterpedia chart repo to your local repository.
 
 ```bash
-$ helm repo add clusterpedia https://clusterpedia-io.github.io/clusterpedia/charts
+$ helm repo add clusterpedia https://clusterpedia-io.github.io/clusterpedia-helm/
 $ helm repo list
 NAME          	URL
-clusterpedia  	https://clusterpedia-io.github.io/clusterpedia/charts
+clusterpedia  	https://clusterpedia-io.github.io/clusterpedia-helm/
 ```
 
 With the repo added, available charts and versions can be viewed.
@@ -47,7 +28,7 @@ helm search repo clusterpedia
 
 ## Install
 
-### Choose storage components
+### 1. Choose storage components
 
 The Clusterpedia chart provides two storage components such as `bitnami/postgresql` and `bitnami/mysql` to choose from
 as sub-charts.
@@ -62,22 +43,25 @@ and [bitnami/mysql](https://github.com/bitnami/charts/tree/master/bitnami/mysql)
 **You can also choose not to install any storage component, but use external components. It is already in the charts
 directory, so you can directly use [values.yaml](./values.yaml)**
 
-### Choose a installation or management mode for CRDs
+### 2. Choose a installation or management mode for CRDs
 
 Clusterpedia requires proper CRD resources to be created in the retrieval environment. You can choose to manually deploy
 CRDs by using YAML, or you can manage it with Helm.
 
-### Manage manually
+#### Manage manually
 
 ```bash
-kubectl apply -f ./_crds
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_clustersyncresources.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_pediaclusters.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/policy.clusterpedia.io_clusterimportpolicies.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/policy.clusterpedia.io_pediaclusterlifecycles.yaml
 ```
 
-### Manage with Helm
+#### Manage with Helm
 
 Manually add `--set installCRDs=true` in the subsequent installation command.
 
-### Check if you need to create a local PV
+### 3. Check if you need to create a local PV
 
 Through the Clusterpedia chart, you can create storage components to use a local PV.
 
@@ -86,22 +70,9 @@ during installation.**
 
 If you need not create the local PV, you can use `--set persistenceMatchNode=None` to declare it explicitly.
 
-### Install Clusterpedia
+### 4. Install Clusterpedia
 
 After the above procedure is completed, you can run the following command to install Clusterpedia:
-
-- local installation
-
-```bash
-helm install clusterpedia . \
---namespace clusterpedia-system \
---create-namespace \
---set persistenceMatchNode={{ LOCAL_PV_NODE }} \
---set installCRDs=true
-```
-
-- remote installation
-
 > If you want to specify the version, you can install the chart with the `--version` argument.
 
 ```bash
@@ -112,7 +83,7 @@ helm install clusterpedia clusterpedia/clusterpedia \
 --set installCRDs=true
 ```
 
-### Create Cluster Auto Import Policy —— ClusterImportPolicy
+### 5. Create Cluster Auto Import Policy —— ClusterImportPolicy
 
 After 0.4.0, Clusterpedia provides a more friendly way to interface to multi-cloud platforms.
 
@@ -160,7 +131,10 @@ helm -n clusterpedia-system uninstall clusterpedia
 If you use any CRD resource that is manually created, you also need to manually clear the CRDs.
 
 ```bash
-kubectl delete -f ./_crds
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_clustersyncresources.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_pediaclusters.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/policy.clusterpedia.io_clusterimportpolicies.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/policy.clusterpedia.io_pediaclusterlifecycles.yaml
 ```
 
 **Note that PVC and PV will not be deleted. You need to manually delete them.**
