@@ -16,8 +16,8 @@ a quick and easy way.
 Pull the Clusterpedia repository.
 
 ```bash
-git clone https://github.com/clusterpedia-io/clusterpedia.git
-cd clusterpedia/charts/clusterpedia
+git clone https://github.com/clusterpedia-io/clusterpedia-helm.git
+cd /charts/clusterpedia
 ```
 
 Since Clusterpedia uses `bitnami/postgresql` and `bitnami/mysql` as subcharts of storage components, it is necessary to
@@ -27,6 +27,7 @@ add the bitnami repository and update the dependencies of the clusterpedia chart
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm dependency build
 ```
+
 ### Remote Installation
 
 First, add the Clusterpedia chart repo to your local repository.
@@ -122,6 +123,7 @@ so you don't need to maintain `PediaCluster` manually based on the managed clust
 We maintain `PediaCluster` for each multi-cloud platform in
 the [Clusterpedia repository](https://github.com/clusterpedia-io/clusterpedia/tree/main/deploy/clusterimportpolicy).
 ClusterImportPolicy` for each multi-cloud platform.
+
 **People also submit ClusterImportPolicy to Clusterpedia for interfacing to other multi-cloud platforms.**
 
 After installing Clusterpedia, you can create the appropriate `ClusterImportPolicy`,

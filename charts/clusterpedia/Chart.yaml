@@ -24,11 +24,11 @@ version: 0.0.5
 appVersion: "v0.5.1"
 
 sources:
-  - "https://github.com/clusterpedia-io/clusterpedia"
+  - "https://github.com/clusterpedia-io/clusterpedia-helm"
 
 maintainers:
   - name: clusterpedia-io
-    url: https://github.com/clusterpedia-io/clusterpedia
+    url: https://github.com/clusterpedia-io/clusterpedia-helm
 
 # This is clusterpedia dependencies
 dependencies:
