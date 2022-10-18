@@ -28,7 +28,7 @@ global:
 ## "internal" means automatic Database installation, default mysql
 ## "external" means to install the database yourself, must specify the database connection parameters
 storageInstallMode: "internal"
-## @param installCRDs define flag whether to install CRD resources
+## @param installCRDs define flag whether to install or upgrade CRD resources
 ##
 installCRDs: false
 ## @param commonLabels Add labels to all the deployed resources (sub-charts are not considered). Evaluated as a template
@@ -381,3 +381,10 @@ mysql:
       ## @param primary.persistence.size MySQL primary persistent volume size
       ##
       size: 10Gi
+
+hookJob:
+  image:
+    registry: ghcr.io
+    repository: cloudtty/cloudshell
+    tag: "v0.4.0"
+    pullPolicy: IfNotPresent

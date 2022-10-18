@@ -2,6 +2,7 @@
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
+
 {{- define "clusterpedia.apiserver.fullname" -}}
 {{- printf "%s-%s" (include "common.names.fullname" .) "apiserver" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
@@ -313,4 +314,8 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- else if eq (include "clusterpedia.storage.type" .) "mysql" -}}
      {{- "DB_PASSWORD" -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "clusterpedia.hookJob.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.hookJob.image) }}
 {{- end -}}

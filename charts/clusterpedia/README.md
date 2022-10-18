@@ -51,13 +51,13 @@ CRDs by using YAML, or you can manage it with Helm.
 #### Manage manually
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_clustersyncresources.yaml
-kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_pediaclusters.yaml
-kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/policy.clusterpedia.io_clusterimportpolicies.yaml
-kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/policy.clusterpedia.io_pediaclusterlifecycles.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia-helm/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_clustersyncresources.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia-helm/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_pediaclusters.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia-helm/main/charts/clusterpedia/_crds/policy.clusterpedia.io_clusterimportpolicies.yaml
+kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia-helm/main/charts/clusterpedia/_crds/policy.clusterpedia.io_pediaclusterlifecycles.yaml
 ```
 
-#### Manage with Helm
+#### Install/Upgrade with Helm
 
 Manually add `--set installCRDs=true` in the subsequent installation command.
 
@@ -128,13 +128,13 @@ You can run the command to uninstall it after the `PediaCluster` resources are c
 helm -n clusterpedia-system uninstall clusterpedia
 ```
 
-If you use any CRD resource that is manually created, you also need to manually clear the CRDs.
+You need to delete the crd manually whether or not manually created.
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_clustersyncresources.yaml
-kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_pediaclusters.yaml
-kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/policy.clusterpedia.io_clusterimportpolicies.yaml
-kubectl apply -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia/main/charts/clusterpedia/_crds/policy.clusterpedia.io_pediaclusterlifecycles.yaml
+kubectl delete -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia-helm/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_clustersyncresources.yaml
+kubectl delete -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia-helm/main/charts/clusterpedia/_crds/cluster.clusterpedia.io_pediaclusters.yaml
+kubectl delete -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia-helm/main/charts/clusterpedia/_crds/policy.clusterpedia.io_clusterimportpolicies.yaml
+kubectl delete -f https://raw.githubusercontent.com/clusterpedia-io/clusterpedia-helm/main/charts/clusterpedia/_crds/policy.clusterpedia.io_pediaclusterlifecycles.yaml
 ```
 
 **Note that PVC and PV will not be deleted. You need to manually delete them.**
