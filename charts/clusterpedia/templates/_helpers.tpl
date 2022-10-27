@@ -317,5 +317,5 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{- define "clusterpedia.hookJob.image" -}}
-{{ include "common.images.image" (dict "imageRoot" .Values.hookJob.image) }}
+{{ include "common.images.image" (dict "imageRoot" .Values.hookJob.image "global" .Values.global) }}
 {{- end -}}
