@@ -1,32 +1,12 @@
-**What type of PR is this?**
+Note on DCO:
 
-<!--
-Add one of the following kinds:
+If the DCO action in the integration test fails, one or more of your commits are not signed off. Please click on the *Details* link next to the DCO action for instructions on how to resolve this.
 
-/kind api-change
-/kind bug
-/kind cleanup
-/kind deprecation
-/kind design
-/kind documentation
-/kind failing-test
-/kind feature
-/kind flake
+Checklist:
 
--->
+* [ ] I have bumped the chart version according to [versioning](https://github.com/clusterpedia/clusterpedia-helm/blob/main/CONTRIBUTING.md#versioning)
+* [ ] I have updated the documentation according to [documentation](https://github.com/clusterpedia/clusterpedia-helm/blob/main/CONTRIBUTING.md#documentation)
+* [ ] Any new values are backwards compatible and/or have sensible default.
+* [ ] I have signed off all my commits as required by [DCO](https://github.com/clusterpedia/clusterpedia-helm/blob/main/CONTRIBUTING.md).
 
-**What this PR does / why we need it**:
-
-**Which issue(s) this PR fixes**:
-Fixes #
-
-**Special notes for your reviewer**:
-
-**Does this PR introduce a user-facing change?**:
-<!--
-If no, just write "NONE" in the release-note block below.
-If yes, a release note is required.
--->
-```release-note
-
-```
+Changes are automatically published when merged to `main`. They are not published on branches.
