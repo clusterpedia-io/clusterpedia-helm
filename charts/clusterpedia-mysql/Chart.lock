@@ -1,0 +1,12 @@
+dependencies:
+- name: mysql
+  repository: https://charts.bitnami.com/bitnami
+  version: 9.4.5
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.17.1
+- name: clusterpedia-core
+  repository: https://clusterpedia-io.github.io/clusterpedia-helm/
+  version: 0.1.0
+digest: sha256:9e2334ce4505330dbdb7d460be53b484015984adc32e77c24b89bbdc2cce96e9
+generated: "2022-12-14T17:53:48.348695+08:00"

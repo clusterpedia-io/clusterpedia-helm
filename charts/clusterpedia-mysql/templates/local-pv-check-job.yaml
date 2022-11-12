@@ -1,0 +1,40 @@
+{{- if and (include "clusterpedia.mysql.storage.persistence.matchNode" .) (eq .Values.storageInstallMode "internal") -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "clusterpedia.job.mysql.storage.pv.fullname" .}}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels.standard" . | nindent 4 }}
+    app: {{ include "clusterpedia.mysql.storage.fullname" . }}
+    internalstorage.clusterpedia.io/type: mysql
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app: {{ include "clusterpedia.mysql.storage.fullname" . }}
+        internalstorage.clusterpedia.io/type: mysql
+        job: check-node-local-pv-dir
+    spec:
+      restartPolicy: Never
+      nodeName: {{ include "clusterpedia.mysql.storage.persistence.matchNode" . }}
+      containers:
+      - name: check-dir
+        image: {{ include "clusterpedia.mysql.storage.image" . }}
+        command: ['sh', '-c', 'stat /bitnami/mysql']
+        volumeMounts:
+        - name: pv-dir
+          mountPath: /bitnami/mysql
+      volumes:
+      - name: pv-dir
+        hostPath:
+          path: /var/local/clusterpedia/mysqlstorage/mysql
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+{{- end -}}

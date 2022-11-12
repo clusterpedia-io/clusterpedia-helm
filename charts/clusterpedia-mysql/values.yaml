@@ -1,0 +1,140 @@
+## Default values for charts.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+
+## @param global clusterpedia global config
+global:
+  ## @param global.imageRegistry Global Docker image registry
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  imagePullSecrets: []
+
+## @param storageInstallMode "internal" and "external" are provided
+## "internal" means automatic Database installation, default mysql
+## "external" means to install the database yourself, must specify the database connection parameters
+storageInstallMode: "internal"
+## @param installCRDs define flag whether to install or upgrade CRD resources
+##
+installCRDs: false
+## @param commonLabels Add labels to all the deployed resources (sub-charts are not considered). Evaluated as a template
+##
+commonLabels: {}
+## @param commonAnnotations Annotations to add to all deployed objects
+##
+commonAnnotations: {}
+## @param global.persistence.matchNode define the nodeAffinity of pv.
+## if PV resources are not required, set it to None!
+## if defined, will create the pv on the node.
+persistenceMatchNode: ""
+
+## @param storageConfig StorageConfig for the apiserver and clustersynchro manger
+##
+storageConfig:
+  ## @param storageConfig.log Config of clusterpedia log
+  log:
+    ## @param storageConfig.log.enabled indicates whether enable log
+    enabled: false
+    ## @param storageConfig.log.stdout indicates whether it is standard output
+    stdout: false
+    ## @param level indicates the level of log
+    ## Level must be one of [Silent, Error, Warn, Info], Default is 'Warn'
+    level: Warn
+    ## @param storageConfig.log.slowThreshold default 200ms
+    slowThreshold: 100ms
+    ## @param storageConfig.log.ignoreRecordNotFoundError indicates whether ignore error type `NotFound`
+    ignoreRecordNotFoundError: false
+    ## @param storageConfig.log.logger indicates the log rotate config
+    logger:
+      ## @param storageConfig.log.logger.filename indicates the file to write logs to
+      filename: /var/log/clusterpedia/internalstorage.log
+      ## @param storageConfig.log.logger.maxsize indicates the maximum size in megabytes of the log file before it gets
+      ## rotated
+      maxsize: 100
+      ## @param storageConfig.log.logger.maxbackups indicates the maximum number of old log files to retain. Default 0
+      ## is to retain all old log files
+      maxbackups: 0
+  ## @param storageConfig.connPool the connPoll config of storage
+  connPool:
+    ## @param storageConfig.connPool.maxIdleConns sets the maximum number of connections in the idle
+    ## connection pool
+    maxIdleConns: 5
+    ## @param storageConfig.connPool.maxOpenConns sets the maximum number of open connections to the database
+    maxOpenConns: 40
+    ## @param storageConfig.connPool.connMaxLifetime sets the maximum amount of time a connection may be reused
+    connMaxLifetime: 60m
+
+## @param external define the auth param of external database
+## if set the storageInstallMode to "external", the param must be set.
+externalStorage:
+  ## @param externalStorage.host for a custom host
+  ##
+  host: ""
+  ## @param externalStorage.port for a custom port
+  ##
+  port:
+  ## @param externalStorage.user Name for a custom user
+  ##
+  user: ""
+  ## @param externalStorage.password Password for a custom password
+  ##
+  password: ""
+  ## @param externalStorage.database Name for a custom database
+  ##
+  database: ""
+  ## @param externalStorage.createDatabase whether to create the .Values.externalStorage.database or not
+  ##
+  createDatabase: false
+
+## @section mysql Parameters
+##
+## mysql properties
+##
+mysql:
+  ## Properties for using an existing mysql installation
+  ## @param mysql.image.registry mysql image registry
+  ## @param mysql.image.repository mysql image repository
+  ## @param mysql.image.tag mysql image tag (immutable tags are recommended)
+  ## @param mysql.image.pullPolicy mysql image pull policy
+  ## @param mysql.image.pullSecrets Specify image pull secrets
+  ##
+  image:
+    registry: docker.io
+    repository: bitnami/mysql
+    tag: 8.0.28-debian-10-r23
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## Example:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  auth:
+    ## @param auth.rootPassword Password for the `root` user. Ignored if existing secret is provided
+    ##
+    rootPassword: "dangerous0"
+    ## @param auth.database Name for a custom database to create
+    ##
+    database: clusterpedia
+    ## @param auth.username Name for a custom user to create
+    ##
+    username: ""
+    ## @param auth.password Password for the new user. Ignored if existing secret is provided
+    ##
+    password: ""
+  ## @primary config
+  primary:
+    ## Enable persistence using Persistent Volume Claims
+    ##
+    persistence:
+      ## @param primary.persistence.enabled Enable persistence on MySQL primary replicas using a `PersistentVolumeClaim`. If false, use emptyDir
+      ##
+      enabled: true
+      ## @param primary.persistence.size MySQL primary persistent volume size
+      ##
+      size: 10Gi
