@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "clusterpedia.storage.initContainer.env" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels.standard" . | nindent 4 }}
+data:
+  STORAGE_TYPE: {{ include "clusterpedia.internal.storage.type" . | quote }}
+  STORAGE_HOST: {{ include "clusterpedia.internal.storage.host" . | quote }}
+  STORAGE_PORT: {{ include "clusterpedia.internal.storage.port" . | quote }}
+  STORAGE_USER: {{ include "clusterpedia.internal.storage.user" . | quote }}
+  STORAGE_DATABASE: {{ include "clusterpedia.internal.storage.database" . | quote }}
+  CREARE_DATABASE: {{ .Values.externalStorage.createDatabase | quote }}

@@ -12,7 +12,7 @@ on:
   push:
   pull_request:
     paths:
-      - "charts/clusterpedia/**"
+      - "charts/**"
 
 jobs:
   chart-lint-test:
@@ -44,6 +44,7 @@ jobs:
       - name: Add dependency chart repos
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm dependency update charts/internal-storage --skip-refresh
 
       - name: Run chart-testing (list-changed)
         id: list-changed

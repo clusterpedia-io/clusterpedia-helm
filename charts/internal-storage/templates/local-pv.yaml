@@ -1,0 +1,29 @@
+{{- if and (include "clusterpedia.internal.storage.persistence.matchNode" .) (eq .Values.storageInstallMode "internal") -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "clusterpedia.internal.storage.fullname" . }}-{{ include "clusterpedia.internal.storage.type" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+  {{- if include "clusterpedia.internal.storage.lables" . }}
+  {{- include "common.tplvalues.render" ( dict "value" (include "clusterpedia.internal.storage.lables" .) "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  capacity:
+    storage: {{ include "clusterpedia.internal.storage.internalstorage.capacity" . }}
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  local:
+    path: {{ include "clusterpedia.internal.storage.hostPath" . }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        {{- with (include "clusterpedia.internal.storage.persistence.matchNode" .) }}
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ . }}
+        {{- end }}
+{{- end -}}
