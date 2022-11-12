@@ -12,7 +12,7 @@ on:
   push:
   pull_request:
     paths:
-      - "charts/clusterpedia/**"
+      - "charts/**"
 
 jobs:
   chart-lint-test:
