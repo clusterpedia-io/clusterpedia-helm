@@ -228,7 +228,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | apiserver.image.pullSecrets | list | `[]` |  |
 | apiserver.image.registry | string | `"ghcr.io"` |  |
 | apiserver.image.repository | string | `"clusterpedia-io/clusterpedia/apiserver"` |  |
-| apiserver.image.tag | string | `"v0.5.1"` |  |
+| apiserver.image.tag | string | `"v0.5.2"` |  |
 | apiserver.labels | object | `{}` |  |
 | apiserver.nodeSelector | object | `{}` |  |
 | apiserver.podAnnotations | object | `{}` |  |
@@ -250,7 +250,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | clustersynchroManager.image.pullSecrets | list | `[]` |  |
 | clustersynchroManager.image.registry | string | `"ghcr.io"` |  |
 | clustersynchroManager.image.repository | string | `"clusterpedia-io/clusterpedia/clustersynchro-manager"` |  |
-| clustersynchroManager.image.tag | string | `"v0.5.1"` |  |
+| clustersynchroManager.image.tag | string | `"v0.5.2"` |  |
 | clustersynchroManager.labels | object | `{}` |  |
 | clustersynchroManager.nodeSelector | object | `{}` |  |
 | clustersynchroManager.podAnnotations | object | `{}` |  |
@@ -269,7 +269,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | controllerManager.image.pullSecrets | list | `[]` |  |
 | controllerManager.image.registry | string | `"ghcr.io"` |  |
 | controllerManager.image.repository | string | `"clusterpedia-io/clusterpedia/controller-manager"` |  |
-| controllerManager.image.tag | string | `"v0.5.1"` |  |
+| controllerManager.image.tag | string | `"v0.5.2"` |  |
 | controllerManager.labels | object | `{}` |  |
 | controllerManager.nodeSelector | object | `{}` |  |
 | controllerManager.podAnnotations | object | `{}` |  |
