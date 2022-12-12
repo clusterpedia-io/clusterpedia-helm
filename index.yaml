@@ -217,4 +217,24 @@ entries:
     urls:
     - https://github.com/clusterpedia-io/clusterpedia/releases/download/clusterpedia-0.0.2/clusterpedia-0.0.2.tgz
     version: 0.0.2
-generated: "2022-12-01T06:09:20.555093718Z"
+  clusterpedia-core:
+  - apiVersion: v2
+    appVersion: v0.6.0
+    created: "2022-12-12T10:13:42.762398927Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      version: 1.x.x
+    description: A Helm chart for Kubernetes
+    digest: 60feef57e5f4ec5774240cd6dea914c0fd3e4d65681d0e64a60ea0e8af42e3d7
+    maintainers:
+    - name: clusterpedia-io
+      url: https://github.com/clusterpedia-io/clusterpedia-helm
+    name: clusterpedia-core
+    sources:
+    - https://github.com/clusterpedia-io/clusterpedia-helm
+    type: application
+    urls:
+    - https://github.com/clusterpedia-io/clusterpedia-helm/releases/download/clusterpedia-core-0.0.1/clusterpedia-core-0.0.1.tgz
+    version: 0.0.1
+generated: "2022-12-12T10:13:42.762442826Z"
