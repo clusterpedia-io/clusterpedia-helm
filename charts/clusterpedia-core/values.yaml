@@ -1,0 +1,209 @@
+## Default values for charts.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+
+## @param global clusterpedia global config
+global:
+  ## @param global.imageRegistry Global Docker image registry
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  imagePullSecrets: []
+
+## @param installCRDs define flag whether to install or upgrade CRD resources
+##
+installCRDs: false
+## @param commonLabels Add labels to all the deployed resources (sub-charts are not considered). Evaluated as a template
+##
+commonLabels: {}
+## @param commonAnnotations Annotations to add to all deployed objects
+##
+commonAnnotations: {}
+
+## clusterpedia apiserver config
+apiserver:
+  ## @param apiserver.labels
+  labels: {}
+  ## @param apiserver.replicaCount target replicas
+  replicaCount: 1
+  ## @param apiserver.podAnnotations
+  podAnnotations: {}
+  ## @param apiserver.podLabels
+  podLabels: {}
+  ## @param image.registry clusterpedia apiserver image registry
+  ## @param image.repository clusterpedia apiserver image repository
+  ## @param image.tag clusterpedia apiserver image tag (immutable tags are recommended)
+  ## @param image.pullPolicy clusterpedia apiserver image pull policy
+  ## @param image.pullSecrets Specify docker-registry secret names as an array
+  ##
+  image:
+    registry: ghcr.io
+    repository: clusterpedia-io/clusterpedia/apiserver
+    tag: v0.6.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## Example:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param apiserver.resources
+  resources:
+    {}
+    # If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  ## @param controllerManager.nodeSelector
+  nodeSelector: {}
+  ## @param controllerManager.affinity
+  affinity: {}
+  ## @param controllerManager.tolerations
+  ## @param apiserver.tolerations
+  tolerations: []
+  ## @param featureGate to apiserver
+  featureGates:
+    ## Allow apiservers to show a count of remaining items in the response to a chunking list request.
+    RemainingItemCount: false
+    ## @param AllowRawSQLQuery is a feature gate for the apiserver to allow querying by the raw sql.
+    ## owner: @cleverhu
+    ## alpha: v0.3.0
+    AllowRawSQLQuery: false
+  ## @param apiserver.enableSHA1Cert specifies whether to allow SHA1 certificates for apiserver.
+  enableSHA1Cert: false
+
+## clustersynchro manager config
+clustersynchroManager:
+  ## @param clustersynchroManager.labels
+  labels: {}
+  ## @param clustersynchroManager.replicaCount target replicas
+  replicaCount: 1
+  ## @param clustersynchroManager.podAnnotations
+  podAnnotations: {}
+  ## @param clustersynchroManager.podLabels
+  podLabels: {}
+  ## @param image.registry clusterpedia clustersynchroManager image registry
+  ## @param image.repository clusterpedia clustersynchroManager image repository
+  ## @param image.tag clusterpedia clustersynchroManager image tag (immutable tags are recommended)
+  ## @param image.pullPolicy clusterpedia clustersynchroManager image pull policy
+  ## @param image.pullSecrets Specify docker-registry secret names as an array
+  ##
+  image:
+    registry: ghcr.io
+    repository: clusterpedia-io/clusterpedia/clustersynchro-manager
+    tag: v0.6.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## Example:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param clustersynchroManager.resources
+  resources:
+    {}
+    # If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  ## @param clustersynchroManager.nodeSelector
+  nodeSelector: {}
+  ## @param clustersynchroManager.affinity
+  affinity: {}
+  ## @param clustersynchroManager.tolerations
+  tolerations: []
+  ## @param featureGate to clustersynchro
+  featureGates:
+    ## @param PruneManagedFields is a feature gate for ClusterSynchro to prune `ManagedFields` of the resource
+    ## owner: @iceber
+    ## alpha: v0.0.9
+    ## beta: v0.3.0
+    PruneManagedFields: true
+    ## @param PruneLastAppliedConfiguration is a feature gate for the ClusterSynchro to prune `LastAppliedConfiguration` of the resource
+    ## owner: @iceber
+    ## alpha: v0.0.9
+    ## beta: v0.3.0
+    PruneLastAppliedConfiguration: true
+    ## @param AllowSyncAllCustomResources is a feature gate for the ClusterSynchro to allow syncing of all custom resources
+    ## owner: @iceber
+    ## alpha: v0.3.0
+    AllowSyncAllCustomResources: false
+    ## @param AllowSyncAllResources is a feature gate for the ClusterSynchro to allow syncing of all resources
+    ## owner: @iceber
+    ## alpha: v0.3.0
+    AllowSyncAllResources: false
+
+## controller manager config
+controllerManager:
+  ## @param controllerManager.labels
+  labels: {}
+  ## @param controllerManager.replicaCount target replicas
+  replicaCount: 1
+  ## @param controllerManager.podAnnotations
+  podAnnotations: {}
+  ## @param controllerManager.podLabels
+  podLabels: {}
+  ## @param image.registry clusterpedia controllerManager image registry
+  ## @param image.repository clusterpedia controllerManager image repository
+  ## @param image.tag clusterpedia controllerManager image tag (immutable tags are recommended)
+  ## @param image.pullPolicy clusterpedia controllerManager image pull policy
+  ## @param image.pullSecrets Specify docker-registry secret names as an array
+  ##
+  image:
+    registry: ghcr.io
+    repository: clusterpedia-io/clusterpedia/controller-manager
+    tag: v0.6.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## Example:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param controllerManager.resources
+  resources:
+    {}
+    # If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  ## @param controllerManager.nodeSelector
+  nodeSelector: {}
+  ## @param controllerManager.affinity
+  affinity: {}
+  ## @param controllerManager.tolerations
+  tolerations: []
+  ## @param featureGate to controller
+  featureGates: {}
+
+hookJob:
+  image:
+    registry: ghcr.io
+    repository: cloudtty/cloudshell
+    tag: "v0.4.0"
+    pullPolicy: IfNotPresent
