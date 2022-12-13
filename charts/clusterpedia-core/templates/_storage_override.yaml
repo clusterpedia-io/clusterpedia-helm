@@ -1,0 +1,8 @@
+{{- define "clusterpedia.storage.override.initContainers" -}}
+{{- end -}}
+
+{{- define "clusterpedia.storage.override.configmap.name" -}}
+{{- end -}}
+
+{{- define "clusterpedia.storage.override.componentEnv" -}}
+{{- end -}}
