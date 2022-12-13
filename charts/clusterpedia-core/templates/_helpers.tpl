@@ -98,9 +98,84 @@ Return the proper Docker Image Registry Secret Names
 {{- end }}
 {{- end -}}
 
+{{- define "clusterpedia.storage.initContainers" -}}
+{{- if (include "clusterpedia.storage.override.initContainers" .) }}
+{{ include "clusterpedia.storage.override.initContainers" . }}
+{{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.storage.plugin.image" -}}
+{{- if .Values.storage.image.repository }}
+{{- $_ := (required "required image tag of storage image" .Values.storage.image.tag) -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.storage.image "global" .Values.global) }}
+{{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.storage.plugin.initContainer" -}}
+{{- if (include "clusterpedia.storage.plugin.image" .) }}
+- name: copy-storage-plugin
+  image: {{ include "clusterpedia.storage.plugin.image" . }}
+  imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
+  command:
+    - /bin/sh
+    - -ec
+    - cp /plugins/* /var/lib/clusterpedia/plugins/
+  volumeMounts:
+  - name: storage-plugins
+    mountPath: /var/lib/clusterpedia/plugins
+{{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.initContainers" -}}
+{{- if or (include "clusterpedia.storage.initContainers" .) (include "clusterpedia.storage.plugin.initContainer" .) }}
+initContainers:
+{{- if (include "clusterpedia.storage.initContainers" .) }}
+{{ include "clusterpedia.storage.initContainers" . }}
+{{- end }}
+{{- if (include "clusterpedia.storage.plugin.initContainer" .) }}
+{{ include "clusterpedia.storage.plugin.initContainer" . }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.volumes" -}}
+{{- if or (include "clusterpedia.storage.configmap.name" .) (include "clusterpedia.storage.plugin.initContainer" .) }}
+volumes:
+{{- if (include "clusterpedia.storage.configmap.name" .) }}
+- name: storage-config
+  configMap:
+    name: {{ include "clusterpedia.storage.configmap.name" . }}
+{{- end }}
+{{- if (include "clusterpedia.storage.plugin.initContainer" .) }}
+- name: storage-plugins
+  emptyDir: {}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.volumeMounts" -}}
+{{- if or (include "clusterpedia.storage.configmap.name" .) (include "clusterpedia.storage.plugin.initContainer" .) }}
+volumeMounts:
+{{- if (include "clusterpedia.storage.configmap.name" .) }}
+- name: storage-config
+  mountPath: /etc/clusterpedia/storage
+  readOnly: true
+{{- end }}
+{{- if (include "clusterpedia.storage.plugin.initContainer" .) }}
+- name: storage-plugins
+  mountPath: /var/lib/clusterpedia/plugins
+  readOnly: true
+{{- end }}
+{{- end }}
+{{- end -}}
+
 {{- define "clusterpedia.apiserver.env" -}}
-{{- if or .Values.apiserver.enableSHA1Cert .Values.storage.componentEnv }}
+{{- if or .Values.apiserver.enableSHA1Cert .Values.storage.componentEnv (include "clusterpedia.storage.override.componentEnv" .) (include "clusterpedia.storage.plugin.initContainer" .) }}
 env:
+{{- if (include "clusterpedia.storage.plugin.initContainer" .) }}
+- name: STORAGE_PLUGINS
+  value: /var/lib/clusterpedia/plugins
+{{- end }}
 {{- if .Values.apiserver.enableSHA1Cert }}
 - name: GODEBUG
   value: x509sha1=1
@@ -114,18 +189,16 @@ env:
 {{- end -}}
 
 {{- define "clusterpedia.clustersynchroManager.env" -}}
-{{- if or .Values.storage.componentEnv (include "clusterpedia.storage.override.componentEnv" .) }}
+{{- if or .Values.storage.componentEnv (include "clusterpedia.storage.override.componentEnv" .) (include "clusterpedia.storage.plugin.initContainer" .) }}
 env:
+{{- if (include "clusterpedia.storage.plugin.initContainer" .) }}
+- name: STORAGE_PLUGINS
+  value: /var/lib/clusterpedia/plugins
+{{- end }}
 {{- if (include "clusterpedia.storage.override.componentEnv" .) }}
 {{ include "clusterpedia.storage.override.componentEnv" . }}
 {{- else if .Values.storage.componentEnv }}
 {{ toYaml .Values.storage.componentEnv }}
 {{- end }}
-{{- end }}
-{{- end -}}
-
-{{- define "clusterpedia.storage.initContainers" -}}
-{{- if (include "clusterpedia.storage.override.initContainers" .) }}
-{{ include "clusterpedia.storage.override.initContainers" . }}
 {{- end }}
 {{- end -}}
