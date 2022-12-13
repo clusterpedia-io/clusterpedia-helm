@@ -55,14 +55,14 @@ Return the proper hookJob image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "clusterpedia.apiserver.imagePullSecrets" -}}
-{{ include "common.images.pullSecrets" (dict "images" (list .Values.apiserver.image .Values.storage.initContainerImage) "global" .Values.global) }}
+{{ include "common.images.pullSecrets" (dict "images" (list .Values.apiserver.image) "global" .Values.global) }}
 {{- end -}}
 
 {{/*
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "clusterpedia.clustersynchroManager.imagePullSecrets" -}}
-{{ include "common.images.pullSecrets" (dict "images" (list .Values.clustersynchroManager.image .Values.storage.initContainerImage) "global" .Values.global) }}
+{{ include "common.images.pullSecrets" (dict "images" (list .Values.clustersynchroManager.image) "global" .Values.global) }}
 {{- end -}}
 
 {{/*
@@ -86,4 +86,46 @@ Return the proper Docker Image Registry Secret Names
       {{- printf "%s=%s" "--feature-gates" $featureGatesFlag -}}
     {{- end }}
   {{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.storage.configmap.name" -}}
+{{- if (include "clusterpedia.storage.override.configmap.name" .) }}
+  {{ include "clusterpedia.storage.override.configmap.name" . }}
+{{- else if .Values.storage.configmap -}}
+  {{- .Values.storage.configmap -}}
+{{- else if .Values.storage.config -}}
+  {{- printf "%s-%s-%s" (include "common.names.fullname" .) .Values.storage.name "config" | trunc 63 | trimSuffix "-" -}}
+{{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.apiserver.env" -}}
+{{- if or .Values.apiserver.enableSHA1Cert .Values.storage.componentEnv }}
+env:
+{{- if .Values.apiserver.enableSHA1Cert }}
+- name: GODEBUG
+  value: x509sha1=1
+{{- end }}
+{{- if (include "clusterpedia.storage.override.componentEnv" .) }}
+{{ include "clusterpedia.storage.override.componentEnv" . }}
+{{- else if .Values.storage.componentEnv }}
+{{ toYaml .Values.storage.componentEnv }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.clustersynchroManager.env" -}}
+{{- if or .Values.storage.componentEnv (include "clusterpedia.storage.override.componentEnv" .) }}
+env:
+{{- if (include "clusterpedia.storage.override.componentEnv" .) }}
+{{ include "clusterpedia.storage.override.componentEnv" . }}
+{{- else if .Values.storage.componentEnv }}
+{{ toYaml .Values.storage.componentEnv }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "clusterpedia.storage.initContainers" -}}
+{{- if (include "clusterpedia.storage.override.initContainers" .) }}
+{{ include "clusterpedia.storage.override.initContainers" . }}
+{{- end }}
 {{- end -}}

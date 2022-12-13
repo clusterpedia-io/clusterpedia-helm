@@ -207,3 +207,9 @@ hookJob:
     repository: cloudtty/cloudshell
     tag: "v0.4.0"
     pullPolicy: IfNotPresent
+
+storage:
+  name: "internalstorage"
+  configMap: ""
+  config: {}
+  componentEnv: []

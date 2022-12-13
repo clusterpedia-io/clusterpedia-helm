@@ -28,8 +28,9 @@ spec:
       {{- end }}
     spec:
       {{- include "clusterpedia.clustersynchroManager.imagePullSecrets" . | indent 6 }}
-    {{-  if (include "clusterpedia.storage.initContainer" .) }}
-      initContainers: {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.storage.initContainer" .) "context" $) | nindent 8 }}
+    {{-  if (include "clusterpedia.storage.initContainers" .) }}
+      initContainers:
+        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.storage.initContainers" .) "context" $) | indent 8 }}
     {{- end }}
       containers:
       - name: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
@@ -37,10 +38,12 @@ spec:
         imagePullPolicy: {{ .Values.clustersynchroManager.image.pullPolicy }}
         command:
         - /usr/local/bin/clustersynchro-manager
-        - --storage-config=/etc/clusterpedia/storage/storage-config.yaml
         - --leader-elect-resource-namespace={{ .Release.Namespace }}
       {{- if .Values.storage.name }}
         - --storage-name={{ .Values.storage.name }}
+      {{- end }}
+      {{- if (include "clusterpedia.storage.configmap.name" .) }}
+        - --storage-config=/etc/clusterpedia/storage/config.yaml
       {{- end }}
       {{- if .Values.clustersynchroManager.featureGates }}
         - {{ include "clusterpedia.common.featureGates" (dict "featureGates" .Values.clustersynchroManager.featureGates) }}
@@ -48,14 +51,19 @@ spec:
       {{- if .Values.clustersynchroManager.resources }}
         resources: {{- toYaml .Values.clustersynchroManager.resources | nindent 12 }}
       {{- end }}
-        env:
-      {{- if (include "clusterpedia.storage.env" .) }}
-        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.storage.env" .) "context" $) | nindent 8 }}
-      {{- end }}
+      {{- if (include "clusterpedia.clustersynchroManager.env" .) -}}
+        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.clustersynchroManager.env" .) "context" $) | indent 8 }}
+      {{- end -}}
+    {{- if (include "clusterpedia.storage.configmap.name" .) }}
         volumeMounts:
         - name: storage-config
           mountPath: /etc/clusterpedia/storage
           readOnly: true
+      volumes:
+      - name: storage-config
+        configMap:
+          name: {{ include "clusterpedia.storage.configmap.name" . }}
+    {{- end }}
       serviceAccountName: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
       {{- if .Values.clustersynchroManager.affinity }}
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.clustersynchroManager.affinity "context" $) | nindent 8 }}
@@ -66,7 +74,3 @@ spec:
       {{- if .Values.clustersynchroManager.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.clustersynchroManager.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      volumes:
-      - name: storage-config
-        configMap:
-          name: {{ required "Please set configmap to storage config!" (include "clusterpedia.storage.config" .) }}

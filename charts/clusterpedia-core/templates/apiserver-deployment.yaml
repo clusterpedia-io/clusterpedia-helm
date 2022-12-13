@@ -26,9 +26,11 @@ spec:
       {{- if .Values.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.apiserver.podLabels "context" $) | nindent 8 }}
       {{- end }}
-    spec: {{ include "clusterpedia.apiserver.imagePullSecrets" . | nindent 6 }}
-    {{- if (include "clusterpedia.storage.initContainer" .) -}}
-      initContainers: {{ include "common.tplvalues.render" (dict "value" (include "clusterpedia.storage.initContainer" .) "context" $) | nindent 6 }}
+    spec: 
+      {{- include "clusterpedia.apiserver.imagePullSecrets" . | indent 6 }}
+    {{-  if (include "clusterpedia.storage.initContainers" .) }}
+      initContainers:
+        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.storage.initContainers" .) "context" $) | indent 8 }}
     {{- end }}
       containers:
       - name: {{ include "clusterpedia.apiserver.fullname" . }}
@@ -37,7 +39,12 @@ spec:
         command:
         - /usr/local/bin/apiserver
         - --secure-port=443
-        - --storage-config=/etc/clusterpedia/storage/storage-config.yaml
+      {{- if .Values.storage.name }}
+        - --storage-name={{ .Values.storage.name }}
+      {{- end }}
+      {{- if (include "clusterpedia.storage.configmap.name" .) }}
+        - --storage-config=/etc/clusterpedia/storage/config.yaml
+      {{- end }}
         - -v=3
       {{- if .Values.apiserver.featureGates }}
         - {{ include "clusterpedia.common.featureGates" (dict "featureGates" .Values.apiserver.featureGates) }}
@@ -45,18 +52,19 @@ spec:
       {{- if .Values.apiserver.resources }}
         resources: {{- toYaml .Values.apiserver.resources | nindent 12 }}
       {{- end }}
-        env:
-      {{- if .Values.apiserver.enableSHA1Cert }}
-        - name: GODEBUG
-          value: x509sha1=1
-      {{- end }}
-      {{- if (include "clusterpedia.storage.env" .) }}
-        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.storage.env" .) "context" $) | nindent 8 }}
-      {{- end }}
+      {{- if (include "clusterpedia.apiserver.env" .) -}}
+        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.apiserver.env" .) "context" $) | indent 8 }}
+      {{- end -}}
+    {{- if (include "clusterpedia.storage.configmap.name" .) }}
         volumeMounts:
         - name: storage-config
           mountPath: /etc/clusterpedia/storage
           readOnly: true
+      volumes:
+      - name: storage-config
+        configMap:
+          name: {{ include "clusterpedia.storage.configmap.name" . }}
+    {{- end }}
       serviceAccountName: {{ include "clusterpedia.apiserver.fullname" . }}
     {{- if .Values.apiserver.affinity }}
       affinity: {{ include "common.tplvalues.render" (dict "value" .Values.apiserver.affinity "context" $) | nindent 8 }}
@@ -67,7 +75,3 @@ spec:
     {{- if .Values.apiserver.tolerations }}
       tolerations: {{ include "common.tplvalues.render" (dict "value" .Values.apiserver.tolerations "context" $) | nindent 8 }}
     {{- end }}
-      volumes:
-      - name: storage-config
-        configMap:
-          name: {{ required "Please set configmap to storage config!" (include "clusterpedia.storage.config" .) }}

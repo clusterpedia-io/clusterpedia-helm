@@ -1,0 +1,11 @@
+{{- if and (include "clusterpedia.storage.configmap.name" .) .Values.storage.config -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "clusterpedia.storage.configmap.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+data:
+  config.yaml: |-
+    {{- toYaml .Values.storage.config | nindent 4 }}
+{{- end -}}
