@@ -28,9 +28,8 @@ spec:
       {{- end }}
     spec:
       {{- include "clusterpedia.clustersynchroManager.imagePullSecrets" . | indent 6 }}
-    {{-  if (include "clusterpedia.storage.initContainers" .) }}
-      initContainers:
-        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.storage.initContainers" .) "context" $) | indent 8 }}
+    {{-  if (include "clusterpedia.initContainers" .) }}
+      {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.initContainers" .) "context" $) | indent 6 }}
     {{- end }}
       containers:
       - name: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
@@ -54,16 +53,9 @@ spec:
       {{- if (include "clusterpedia.clustersynchroManager.env" .) -}}
         {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.clustersynchroManager.env" .) "context" $) | indent 8 }}
       {{- end -}}
-    {{- if (include "clusterpedia.storage.configmap.name" .) }}
-        volumeMounts:
-        - name: storage-config
-          mountPath: /etc/clusterpedia/storage
-          readOnly: true
-      volumes:
-      - name: storage-config
-        configMap:
-          name: {{ include "clusterpedia.storage.configmap.name" . }}
-    {{- end }}
+      {{- if (include "clusterpedia.volumeMounts" .) -}}
+        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.volumeMounts" .) "context" $) | indent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
       {{- if .Values.clustersynchroManager.affinity }}
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.clustersynchroManager.affinity "context" $) | nindent 8 }}
@@ -74,3 +66,6 @@ spec:
       {{- if .Values.clustersynchroManager.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.clustersynchroManager.tolerations "context" $) | nindent 8 }}
       {{- end }}
+    {{- if (include "clusterpedia.volumes" .) -}}
+      {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.volumes" .) "context" $) | indent 6 }}
+    {{- end }}

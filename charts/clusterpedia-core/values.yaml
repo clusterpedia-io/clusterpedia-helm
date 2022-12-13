@@ -213,3 +213,11 @@ storage:
   configMap: ""
   config: {}
   componentEnv: []
+  image:
+    registry: ""
+    repository: ""
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ##
+    pullPolicy: IfNotPresent

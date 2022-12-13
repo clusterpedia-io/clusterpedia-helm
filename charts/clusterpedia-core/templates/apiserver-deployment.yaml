@@ -28,9 +28,8 @@ spec:
       {{- end }}
     spec: 
       {{- include "clusterpedia.apiserver.imagePullSecrets" . | indent 6 }}
-    {{-  if (include "clusterpedia.storage.initContainers" .) }}
-      initContainers:
-        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.storage.initContainers" .) "context" $) | indent 8 }}
+    {{-  if (include "clusterpedia.initContainers" .) }}
+      {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.initContainers" .) "context" $) | indent 6 }}
     {{- end }}
       containers:
       - name: {{ include "clusterpedia.apiserver.fullname" . }}
@@ -45,26 +44,19 @@ spec:
       {{- if (include "clusterpedia.storage.configmap.name" .) }}
         - --storage-config=/etc/clusterpedia/storage/config.yaml
       {{- end }}
-        - -v=3
       {{- if .Values.apiserver.featureGates }}
         - {{ include "clusterpedia.common.featureGates" (dict "featureGates" .Values.apiserver.featureGates) }}
       {{- end }}
+        - -v=3
       {{- if .Values.apiserver.resources }}
         resources: {{- toYaml .Values.apiserver.resources | nindent 12 }}
       {{- end }}
       {{- if (include "clusterpedia.apiserver.env" .) -}}
         {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.apiserver.env" .) "context" $) | indent 8 }}
       {{- end -}}
-    {{- if (include "clusterpedia.storage.configmap.name" .) }}
-        volumeMounts:
-        - name: storage-config
-          mountPath: /etc/clusterpedia/storage
-          readOnly: true
-      volumes:
-      - name: storage-config
-        configMap:
-          name: {{ include "clusterpedia.storage.configmap.name" . }}
-    {{- end }}
+      {{- if (include "clusterpedia.volumeMounts" .) -}}
+        {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.volumeMounts" .) "context" $) | indent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "clusterpedia.apiserver.fullname" . }}
     {{- if .Values.apiserver.affinity }}
       affinity: {{ include "common.tplvalues.render" (dict "value" .Values.apiserver.affinity "context" $) | nindent 8 }}
@@ -74,4 +66,7 @@ spec:
     {{- end }}
     {{- if .Values.apiserver.tolerations }}
       tolerations: {{ include "common.tplvalues.render" (dict "value" .Values.apiserver.tolerations "context" $) | nindent 8 }}
+    {{- end }}
+    {{- if (include "clusterpedia.volumes" .) -}}
+      {{- include "common.tplvalues.render" (dict "value" (include "clusterpedia.volumes" .) "context" $) | indent 6 }}
     {{- end }}
