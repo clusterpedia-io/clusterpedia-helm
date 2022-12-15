@@ -90,7 +90,7 @@ Return the proper Docker Image Registry Secret Names
 
 {{- define "clusterpedia.storage.configmap.name" -}}
 {{- if (include "clusterpedia.storage.override.configmap.name" .) }}
-  {{ include "clusterpedia.storage.override.configmap.name" . }}
+  {{- include "clusterpedia.storage.override.configmap.name" . -}}
 {{- else if .Values.storage.configmap -}}
   {{- .Values.storage.configmap -}}
 {{- else if .Values.storage.config -}}
@@ -100,7 +100,7 @@ Return the proper Docker Image Registry Secret Names
 
 {{- define "clusterpedia.storage.initContainers" -}}
 {{- if (include "clusterpedia.storage.override.initContainers" .) }}
-{{ include "clusterpedia.storage.override.initContainers" . }}
+{{- include "clusterpedia.storage.override.initContainers" . -}}
 {{- end }}
 {{- end -}}
 

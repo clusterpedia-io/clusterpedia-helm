@@ -1,0 +1,29 @@
+{{- if and (include "clusterpedia.mysql.storage.persistence.matchNode" .) (eq .Values.storageInstallMode "internal") -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "clusterpedia.mysql.storage.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+{{- if .Values.mysql.primary.persistence.selector.matchLabels }}
+  {{- include "common.tplvalues.render" ( dict "value" .Values.mysql.primary.persistence.selector.matchLabels "context" $ ) | nindent 4 }}
+{{- end }}
+spec:
+  capacity:
+    storage: {{ .Values.mysql.primary.persistence.size }}
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  local:
+    path: /var/local/clusterpedia/mysqlstorage/mysql
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        {{- if (include "clusterpedia.mysql.storage.persistence.matchNode" .) }}
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ include "clusterpedia.mysql.storage.persistence.matchNode" . }}
+        {{- end }}
+{{- end -}}
