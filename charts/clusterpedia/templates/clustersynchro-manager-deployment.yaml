@@ -83,6 +83,7 @@ spec:
         - /usr/local/bin/clustersynchro-manager
         - --storage-config=/etc/clusterpedia/storage/internalstorage-config.yaml
         - --leader-elect-resource-namespace={{ .Release.Namespace }}
+        - --worker-number={{ .Values.clustersynchroManager.workerNumber }}
         {{- with (include "clusterpedia.clustersynchroManager.featureGates" .) }}
         - {{ . }}
         {{- end }}
