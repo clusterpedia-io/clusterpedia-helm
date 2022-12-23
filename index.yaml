@@ -2,6 +2,33 @@ apiVersion: v1
 entries:
   clusterpedia:
   - apiVersion: v2
+    appVersion: v0.6.0
+    created: "2022-12-23T07:55:30.05185474Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.x.x
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      version: 1.x.x
+    description: A Helm chart for Kubernetes
+    digest: 2495dbeedb4c68da0d568dc95761e0b1ae85877a0bda647e6e12e839dc52b8a7
+    maintainers:
+    - name: clusterpedia-io
+      url: https://github.com/clusterpedia-io/clusterpedia-helm
+    name: clusterpedia
+    sources:
+    - https://github.com/clusterpedia-io/clusterpedia-helm
+    type: application
+    urls:
+    - https://github.com/clusterpedia-io/clusterpedia-helm/releases/download/clusterpedia-1.2.0/clusterpedia-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v2
     appVersion: v0.5.2
     created: "2022-12-01T06:09:20.555063417Z"
     dependencies:
@@ -220,6 +247,25 @@ entries:
   clusterpedia-core:
   - apiVersion: v2
     appVersion: v0.6.0
+    created: "2022-12-23T07:55:30.199098203Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      version: 1.x.x
+    description: A Helm chart for Clusterpedia
+    digest: fe664f5c5aab3b7e497f66d3a08c406c112b0700ae8a3aa8542f5bd9b4cc2c20
+    maintainers:
+    - name: clusterpedia-io
+      url: https://github.com/clusterpedia-io/clusterpedia-helm
+    name: clusterpedia-core
+    sources:
+    - https://github.com/clusterpedia-io/clusterpedia-helm
+    type: application
+    urls:
+    - https://github.com/clusterpedia-io/clusterpedia-helm/releases/download/clusterpedia-core-0.1.1/clusterpedia-core-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v0.6.0
     created: "2022-12-13T09:14:46.383231675Z"
     dependencies:
     - name: common
@@ -256,4 +302,30 @@ entries:
     urls:
     - https://github.com/clusterpedia-io/clusterpedia-helm/releases/download/clusterpedia-core-0.0.1/clusterpedia-core-0.0.1.tgz
     version: 0.0.1
-generated: "2022-12-13T09:14:46.383420177Z"
+  clusterpedia-mysql:
+  - apiVersion: v2
+    appVersion: v0.6.0
+    created: "2022-12-23T07:55:30.384454553Z"
+    dependencies:
+    - name: mysql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      version: 1.x.x
+    - name: clusterpedia-core
+      repository: https://clusterpedia-io.github.io/clusterpedia-helm/
+      version: 0.1.x
+    description: A Helm chart for Clusterpedia
+    digest: 2f16e0360dbad013872bdb461f055d6c49a26803200ea35165c85610dc46066b
+    maintainers:
+    - name: clusterpedia-io
+      url: https://github.com/clusterpedia-io/clusterpedia-helm
+    name: clusterpedia-mysql
+    sources:
+    - https://github.com/clusterpedia-io/clusterpedia-helm
+    type: application
+    urls:
+    - https://github.com/clusterpedia-io/clusterpedia-helm/releases/download/clusterpedia-mysql-0.1.1/clusterpedia-mysql-0.1.1.tgz
+    version: 0.1.1
+generated: "2022-12-23T07:55:30.384497953Z"
