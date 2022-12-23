@@ -8,5 +8,5 @@ dependencies:
 - name: clusterpedia-core
   repository: https://clusterpedia-io.github.io/clusterpedia-helm/
   version: 0.1.0
-digest: sha256:9e2334ce4505330dbdb7d460be53b484015984adc32e77c24b89bbdc2cce96e9
-generated: "2022-12-14T17:53:48.348695+08:00"
+digest: sha256:6d5d18f89239c3a286e0822ad8b6904d63067553d6a960b61a262b8e3374bec4
+generated: "2022-12-23T15:40:31.817123+08:00"
