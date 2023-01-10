@@ -215,7 +215,7 @@ clustersynchroManager:
   affinity: {}
   ## @param clustersynchroManager.tolerations
   tolerations: []
-  ## @param featureGate to clustersynchro
+  ## @param clustersynchroManager.featureGate featureGate to clustersynchro
   featureGates: {}
     ## @param PruneManagedFields is a feature gate for ClusterSynchro to prune `ManagedFields` of the resource
     ## owner: @iceber
@@ -243,6 +243,16 @@ clustersynchroManager:
     ## owner: @iceber
     ## alpha: v0.6.0
     ## HealthCheckerWithStandaloneTCP: false
+  ## @param clustersynchroManager.leaderElect.leaseDuration the duration that non-leader candidates will wait after observing a leadership renewal
+  ## @param clustersynchroManager.leaderElect.renewDeadline the interval between attempts by the acting master to renew a leadership slot before it stops leading
+  ## @param clustersynchroManager.leaderElect.retryPeriod the duration the clients should wait between attempting acquisition and renewal of a leadership
+  ## @param clustersynchroManager.leaderElect.resourceLock the type of resource object that is used for locking during leader election. Supported options are 'leases', 'endpointsleases' and 'configmapsleases'
+  ##
+  leaderElect:
+    leaseDuration: "15s"
+    renewDeadline: "10s"
+    retryPeriod: "2s"
+    resourceLock: "leases"
 
 ## controller manager config
 controllerManager:
