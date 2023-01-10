@@ -83,6 +83,10 @@ spec:
         - /usr/local/bin/clustersynchro-manager
         - --storage-config=/etc/clusterpedia/storage/internalstorage-config.yaml
         - --leader-elect-resource-namespace={{ .Release.Namespace }}
+        - --leader-elect-lease-duration={{ .Values.clustersynchroManager.leaderElect.leaseDuration }}
+        - --leader-elect-renew-deadline={{ .Values.clustersynchroManager.leaderElect.renewDeadline }}
+        - --leader-elect-retry-period={{ .Values.clustersynchroManager.leaderElect.retryPeriod }}
+        - --leader-elect-resource-lock={{ .Values.clustersynchroManager.leaderElect.resourceLock }}
         - --worker-number={{ .Values.clustersynchroManager.workerNumber }}
         {{- with (include "clusterpedia.clustersynchroManager.featureGates" .) }}
         - {{ . }}
