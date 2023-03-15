@@ -49,6 +49,10 @@ Return the proper controllerManager image name
 {{- printf "%s-%s" (include "common.names.fullname" .) "internalstorage" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{- define "clusterpedia.scripts.fullname" -}}
+{{- printf "%s-%s" (include "common.names.fullname" .) "scripts" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{/*
 Return the proper Docker Image Registry Secret Names
 */}}
