@@ -122,7 +122,7 @@ apiserver:
   image:
     registry: ghcr.io
     repository: clusterpedia-io/clusterpedia/apiserver
-    tag: v0.6.2
+    tag: v0.6.3
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ##
@@ -186,7 +186,7 @@ clustersynchroManager:
   image:
     registry: ghcr.io
     repository: clusterpedia-io/clusterpedia/clustersynchro-manager
-    tag: v0.6.2
+    tag: v0.6.3
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ##
@@ -273,7 +273,7 @@ controllerManager:
   image:
     registry: ghcr.io
     repository: clusterpedia-io/clusterpedia/controller-manager
-    tag: v0.6.2
+    tag: v0.6.3
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ##
