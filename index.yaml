@@ -2,6 +2,33 @@ apiVersion: v1
 entries:
   clusterpedia:
   - apiVersion: v2
+    appVersion: v0.6.3
+    created: "2023-03-15T12:33:38.819521766Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.x.x
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      version: 1.x.x
+    description: A Helm chart for Kubernetes
+    digest: 37e42e039b7852d4dd835a97dc751e2df992339050d3617d621935d88264987c
+    maintainers:
+    - name: clusterpedia-io
+      url: https://github.com/clusterpedia-io/clusterpedia-helm
+    name: clusterpedia
+    sources:
+    - https://github.com/clusterpedia-io/clusterpedia-helm
+    type: application
+    urls:
+    - https://github.com/clusterpedia-io/clusterpedia-helm/releases/download/clusterpedia-1.5.0/clusterpedia-1.5.0.tgz
+    version: 1.5.0
+  - apiVersion: v2
     appVersion: v0.6.2
     created: "2023-03-15T08:51:31.585030904Z"
     dependencies:
@@ -409,4 +436,4 @@ entries:
     urls:
     - https://github.com/clusterpedia-io/clusterpedia-helm/releases/download/clusterpedia-mysql-0.1.1/clusterpedia-mysql-0.1.1.tgz
     version: 0.1.1
-generated: "2023-03-15T08:51:31.585099904Z"
+generated: "2023-03-15T12:33:38.819620971Z"
