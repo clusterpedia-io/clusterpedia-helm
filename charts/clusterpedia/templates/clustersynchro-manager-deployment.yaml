@@ -50,7 +50,8 @@ spec:
             # Load YAML data into a Bash variable
             source /opt/scripts/parse-yaml.sh;
             create_variables /etc/clusterpedia/storage/internalstorage-config.yaml;
-            until mysql -u${user} -p${DB_PASSWORD} --host=${host} --port=${port} -e 'CREATE DATABASE IF NOT EXISTS {{ include "clusterpedia.storage.database" . }}'; do
+            if [ -z $password ]; then password=${DB_PASSWORD}; fi;
+            until mysql -u${user} -p${password} --host=${host} --port=${port} -e 'CREATE DATABASE IF NOT EXISTS {{ include "clusterpedia.storage.database" . }}'; do
             echo waiting for database check && sleep 1; 
             done;
             echo 'DataBase OK ✓'
@@ -88,7 +89,8 @@ spec:
             # Load YAML data into a Bash variable
             source /opt/scripts/parse-yaml.sh;
             create_variables /etc/clusterpedia/storage/internalstorage-config.yaml;
-            until mysqladmin status -u${user} -p${DB_PASSWORD} --host=${host} --port=${port}; do
+            if [ -z $password ]; then password=${DB_PASSWORD}; fi;
+            until mysqladmin status -u${user} -p${password} --host=${host} --port=${port}; do
             echo waiting for database check && sleep 1; 
             done;
             echo 'DataBase OK ✓'

@@ -6,7 +6,7 @@ metadata:
   labels: {{- include "common.labels.standard" . | nindent 4 }}
 data:
   parse-yaml.sh: |
-    function parse_yaml {
+    function parse_yaml() {
       local prefix=$2
       local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
       sed -ne "s|^\($s\):|\1|" \
@@ -22,7 +22,38 @@ data:
           }
       }'
     }
+
+    function parse_mysql_dsn() {
+        local dsn=$1
+        if [ -z $dsn ]
+        then
+            return
+        fi
+
+        IFS='?' read -r -a _dsn <<< $dsn; upnad=${_dsn[0]}
+        IFS='/' read -a upnad <<< $upnad; upna=${upnad[0]}; database=${upnad[1]}
+        IFS='(' read -a upna <<< $upna ; upn=${upna[0]}; address=${upna[1]%?}
+        IFS='@' read -r -a upn <<< $upn; up=${upn[0]}; protocal=${upn[1]}
+        IFS=':' read -r -a up <<< $up; user=${up[0]}; password=${up[1]}
+
+        if [ ! -z $address ]
+        then
+            IFS=':' read -r -a address <<< $address; host=${address[0]}; port=${address[1]}
+        fi
+
+        echo "database=\"$database\""
+        echo "host=\"$host\""
+        echo "port=\"$port\""
+        echo "user=\"$user\""
+        echo "password=\"$password\""
+    }
+
     function create_variables() {
         local yaml_file="$1"
         eval "$(parse_yaml "$yaml_file")"
+
+        if [ $type == "mysql" ]
+        then
+            eval $(parse_mysql_dsn "$dsn")
+        fi
     }
