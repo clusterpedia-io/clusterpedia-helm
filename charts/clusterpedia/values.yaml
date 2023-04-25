@@ -84,6 +84,10 @@ externalStorage:
   ## @param externalStorage.type Select which database backend Clusterpedia will use. Can be 'postgres' or 'mysql'
   ##
   type: ""
+  ## @dsn externalStorage.type for storage dsn. If it is set, then the host, port, user, database parameters will be ignored
+  ## It only works for mysql
+  ##
+  dsn: ""
   ## @param externalStorage.host for a custom host
   ##
   host: ""

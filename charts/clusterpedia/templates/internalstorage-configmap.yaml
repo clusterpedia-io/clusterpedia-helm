@@ -7,6 +7,7 @@ metadata:
 data:
   internalstorage-config.yaml: |-
     type: {{ include "clusterpedia.storage.type" . | quote }}
+    dsn: {{ include "clusterpedia.storage.dsn" . | quote }}
     host: {{ include "clusterpedia.storage.host" . | quote }}
     port: {{ include "clusterpedia.storage.port" . }}
     user: {{ include "clusterpedia.storage.user" . }}

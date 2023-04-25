@@ -122,9 +122,25 @@ Return the proper Docker Image Registry Secret Names
      {{- end -}}
 {{- end -}}
 
+{{- define "clusterpedia.storage.dsn" -}}
+{{- if eq .Values.storageInstallMode "external" }}
+     {{- if not (eq .Values.externalStorage.type "mysql") }}
+          {{ required "storage dsn not support mysql" "" }}
+     {{- else -}}
+          {{- .Values.externalStorage.dsn }}
+     {{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+
 {{- define "clusterpedia.storage.user" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- required "Please set correct storage user!" .Values.externalStorage.user -}}
+     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+         {{- required "Please set correct storage user!" .Values.externalStorage.user -}}
+     {{- else -}}
+         {{- .Values.externalStorage.user -}}
+     {{- end -}}
 {{- else -}}
      {{- if eq (include "clusterpedia.storage.type" .) "postgres" -}}
           {{- if not (empty .Values.global.postgresql.auth.username) -}}
@@ -144,7 +160,11 @@ Return the proper Docker Image Registry Secret Names
 
 {{- define "clusterpedia.storage.password" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- required "Please set correct storage password!" .Values.externalStorage.password | b64enc -}}
+     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+         {{- required "Please set correct storage password!" .Values.externalStorage.password | b64enc -}}
+     {{- else -}}
+         {{- .Values.externalStorage.password | b64enc -}}
+     {{- end -}}
 {{- else -}}
      {{- if eq (include "clusterpedia.storage.type" .) "postgres" }}
           {{- if not (empty .Values.global.postgresql.auth.username) -}}
@@ -165,7 +185,11 @@ Return the proper Docker Image Registry Secret Names
 {{/* use the default port */}}
 {{- define "clusterpedia.storage.port" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- required "Please set correct storage port!" .Values.externalStorage.port -}}
+     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+         {{- required "Please set correct storage port!" .Values.externalStorage.port -}}
+     {{- else -}}
+         {{- .Values.externalStorage.port }}
+     {{- end -}}
 {{- else -}}
      {{- if eq (include "clusterpedia.storage.type" .) "postgres" -}}
      {{- .Values.postgresql.primary.service.ports.postgresql -}}
@@ -178,7 +202,11 @@ Return the proper Docker Image Registry Secret Names
 {{/* use the default port */}}
 {{- define "clusterpedia.storage.host" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- required "Please set correct storage host!" .Values.externalStorage.host -}}
+     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+         {{- required "Please set correct storage host!" .Values.externalStorage.host -}}
+     {{- else -}}
+         {{- .Values.externalStorage.host }}
+     {{- end -}}
 {{- else -}}
      {{- if eq (include "clusterpedia.storage.type" .) "postgres" -}}
           {{- include "clusterpedia.postgresql.fullname" . -}}
@@ -190,10 +218,10 @@ Return the proper Docker Image Registry Secret Names
 
 {{- define "clusterpedia.storage.database" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- if empty .Values.externalStorage.database }}
-          {{ required "Please set correct storage database!" "" }}
+     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+          {{- required "Please set correct storage database!" .Values.externalStorage.database -}}
      {{- else -}}
-          {{- .Values.externalStorage.database }}
+          {{- .Values.externalStorage.database -}}
      {{- end -}}
 {{- else -}}
      {{- "clusterpedia" -}}
