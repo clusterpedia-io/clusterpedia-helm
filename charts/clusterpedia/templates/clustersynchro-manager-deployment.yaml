@@ -136,6 +136,8 @@ spec:
               secretKeyRef:
                 name: {{ include "clusterpedia.internalstorage.fullname" . }}
                 key: password
+          - name: GODEBUG
+            value: netdns=go
         volumeMounts:
           - name: internalstorage-config
             mountPath: /etc/clusterpedia/storage

@@ -134,7 +134,10 @@ spec:
               key: password
         {{- if .Values.apiserver.enableSHA1Cert }}
         - name: GODEBUG
-          value: x509sha1=1
+          value: netdns=go,x509sha1=1
+        {{- else }}
+        - name: GODEBUG
+          value: netdns=go
         {{- end }}
         volumeMounts:
         - name: internalstorage-config
