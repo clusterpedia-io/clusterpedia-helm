@@ -127,7 +127,15 @@ Return the proper Docker Image Registry Secret Names
      {{- if not (eq .Values.externalStorage.type "mysql") }}
           {{ required "storage dsn not support mysql" "" }}
      {{- else -}}
-          {{- .Values.externalStorage.dsn }}
+          {{- if contains "parseTime" .Values.externalStorage.dsn }}
+               {{- .Values.externalStorage.dsn }}
+          {{- else }}
+               {{- if contains "?" .Values.externalStorage.dsn }}
+                    {{- printf "%s&%s" .Values.externalStorage.dsn "parseTime=true" -}}
+               {{- else }}
+                    {{- printf "%s?%s" .Values.externalStorage.dsn "parseTime=true" -}}
+               {{- end }}
+          {{- end }}
      {{- end -}}
 {{- end -}}
 {{- end -}}
