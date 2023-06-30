@@ -35,7 +35,7 @@ spec:
       containers:
       - name: install-crds
         image: {{ include "clusterpedia.hookJob.image" . }}
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.hookJob.image.pullPolicy }}
         workingDir: /crds
         command:
         - /bin/sh
