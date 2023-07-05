@@ -124,14 +124,15 @@ Return the proper Docker Image Registry Secret Names
 
 {{- define "clusterpedia.storage.dsn" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- if not (eq .Values.externalStorage.type "mysql") }}
-          {{ required "storage dsn not support mysql" "" }}
+{{- if not (empty .Values.externalStorage.dsn) -}}
+     {{- if eq .Values.externalStorage.type "mysql" }}
+         {{- .Values.externalStorage.dsn }}
      {{- else -}}
-          {{- .Values.externalStorage.dsn }}
+         {{ required "storage dsn only supports mysql" "" }}
      {{- end -}}
 {{- end -}}
 {{- end -}}
-
+{{- end -}}
 
 
 {{- define "clusterpedia.storage.user" -}}
