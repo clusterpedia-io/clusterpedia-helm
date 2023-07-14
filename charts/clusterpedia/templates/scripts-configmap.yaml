@@ -47,6 +47,35 @@ data:
         echo "user=\"$user\""
         echo "password=\"$password\""
     }
+    
+    function parse_postgres_dsn() {
+        local dsn=$1
+        if [ -z $dsn ]
+        then
+            return
+        fi
+
+        kvpairs=($dsn)
+        for kv in "${kvpairs[@]}"; do
+            if [[ $kv == "host"* ]]; then
+            IFS='=' read -r -a _kv <<< $kv; host=${_kv[1]}
+            fi
+            if [[ $kv == "user"* ]]; then
+            IFS='=' read -r -a _kv <<< $kv; user=${_kv[1]}
+            fi
+            if [[ $kv == "port"* ]]; then
+            IFS='=' read -r -a _kv <<< $kv; port=${_kv[1]}
+            fi
+            if [[ $kv == "dbname"* ]]; then
+            IFS='=' read -r -a _kv <<< $kv; database=${_kv[1]}
+            fi
+        done
+    
+        echo "database=\"$database\""
+        echo "host=\"$host\""
+        echo "port=\"$port\""
+        echo "user=\"$user\""
+    }
 
     function create_variables() {
         local yaml_file="$1"
@@ -55,5 +84,10 @@ data:
         if [ $type == "mysql" ]
         then
             eval $(parse_mysql_dsn "$dsn")
+        fi
+    
+        if [ $type == "postgres" ]
+        then
+            eval $(parse_postgres_dsn "$dsn")
         fi
     }
