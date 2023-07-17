@@ -257,6 +257,8 @@ clustersynchroManager:
     renewDeadline: "10s"
     retryPeriod: "2s"
     resourceLock: "leases"
+  kubeStateMetrics:
+    enabled: false
 
 ## controller manager config
 controllerManager:

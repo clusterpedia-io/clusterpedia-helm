@@ -1,0 +1,18 @@
+{{- if .Values.clustersynchroManager.kubeStateMetrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clusterpedia.kubeStateMetrics.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+spec:
+  ports:
+  - name: kube-state-metrics
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
+    {{- if .Values.clustersynchroManager.podLabels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.clustersynchroManager.podLabels "context" $) | nindent 4 }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clusterpedia.clustersynchroManager.fullname" . }}-metrics
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+spec:
+  ports:
+  - name: metrics
+    port: 8081
+    targetPort: 8081
+  selector:
+    app: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
+    {{- if .Values.clustersynchroManager.podLabels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.clustersynchroManager.podLabels "context" $) | nindent 4 }}
+    {{- end }}
