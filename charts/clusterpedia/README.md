@@ -210,6 +210,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 |-----|------|---------|-------------|
 | externalStorage.createDatabase | bool | `false` |  |
 | externalStorage.database | string | `""` |  |
+| externalStorage.dsn | string | `""` |  |
 | externalStorage.host | string | `""` |  |
 | externalStorage.password | string | `""` |  |
 | externalStorage.port | string | `nil` |  |
@@ -222,13 +223,12 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 |-----|------|---------|-------------|
 | apiserver.affinity | object | `{}` |  |
 | apiserver.enableSHA1Cert | bool | `false` |  |
-| apiserver.featureGates.AllowRawSQLQuery | bool | `false` |  |
-| apiserver.featureGates.RemainingItemCount | bool | `false` |  |
+| apiserver.featureGates | object | `{}` |  |
 | apiserver.image.pullPolicy | string | `"IfNotPresent"` |  |
 | apiserver.image.pullSecrets | list | `[]` |  |
 | apiserver.image.registry | string | `"ghcr.io"` |  |
 | apiserver.image.repository | string | `"clusterpedia-io/clusterpedia/apiserver"` |  |
-| apiserver.image.tag | string | `"v0.5.2"` |  |
+| apiserver.image.tag | string | `"v0.7.0"` |  |
 | apiserver.labels | object | `{}` |  |
 | apiserver.nodeSelector | object | `{}` |  |
 | apiserver.podAnnotations | object | `{}` |  |
@@ -242,22 +242,24 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | clustersynchroManager.affinity | object | `{}` |  |
-| clustersynchroManager.featureGates.AllowSyncAllCustomResources | bool | `false` |  |
-| clustersynchroManager.featureGates.AllowSyncAllResources | bool | `false` |  |
-| clustersynchroManager.featureGates.PruneLastAppliedConfiguration | bool | `true` |  |
-| clustersynchroManager.featureGates.PruneManagedFields | bool | `true` |  |
+| clustersynchroManager.featureGates | object | `{}` |  |
 | clustersynchroManager.image.pullPolicy | string | `"IfNotPresent"` |  |
 | clustersynchroManager.image.pullSecrets | list | `[]` |  |
 | clustersynchroManager.image.registry | string | `"ghcr.io"` |  |
 | clustersynchroManager.image.repository | string | `"clusterpedia-io/clusterpedia/clustersynchro-manager"` |  |
-| clustersynchroManager.image.tag | string | `"v0.5.2"` |  |
+| clustersynchroManager.image.tag | string | `"v0.7.0"` |  |
 | clustersynchroManager.labels | object | `{}` |  |
+| clustersynchroManager.leaderElect.leaseDuration | string | `"15s"` |  |
+| clustersynchroManager.leaderElect.renewDeadline | string | `"10s"` |  |
+| clustersynchroManager.leaderElect.resourceLock | string | `"leases"` |  |
+| clustersynchroManager.leaderElect.retryPeriod | string | `"2s"` |  |
 | clustersynchroManager.nodeSelector | object | `{}` |  |
 | clustersynchroManager.podAnnotations | object | `{}` |  |
 | clustersynchroManager.podLabels | object | `{}` |  |
 | clustersynchroManager.replicaCount | int | `1` |  |
 | clustersynchroManager.resources | object | `{}` |  |
 | clustersynchroManager.tolerations | list | `[]` |  |
+| clustersynchroManager.workerNumber | int | `5` |  |
 
 ### ControllerManager
 
@@ -269,7 +271,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | controllerManager.image.pullSecrets | list | `[]` |  |
 | controllerManager.image.registry | string | `"ghcr.io"` |  |
 | controllerManager.image.repository | string | `"clusterpedia-io/clusterpedia/controller-manager"` |  |
-| controllerManager.image.tag | string | `"v0.5.2"` |  |
+| controllerManager.image.tag | string | `"v0.7.0"` |  |
 | controllerManager.labels | object | `{}` |  |
 | controllerManager.nodeSelector | object | `{}` |  |
 | controllerManager.podAnnotations | object | `{}` |  |
