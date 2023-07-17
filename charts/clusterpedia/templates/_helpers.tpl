@@ -127,8 +127,10 @@ Return the proper Docker Image Registry Secret Names
 {{- if not (empty .Values.externalStorage.dsn) -}}
      {{- if eq .Values.externalStorage.type "mysql" }}
          {{- .Values.externalStorage.dsn }}
+     {{- else if eq (include "clusterpedia.storage.type" .) "postgres" -}}
+         {{- .Values.externalStorage.dsn }}
      {{- else -}}
-         {{ required "storage dsn only supports mysql" "" }}
+         {{ required "storage dsn only supports mysql or postgres" "" }}
      {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -149,7 +151,7 @@ Return the proper Docker Image Registry Secret Names
           {{- else -}}
                {{- "postgres" -}}
           {{- end -}}
-               {{- else if eq (include "clusterpedia.storage.type" .) "mysql" -}}
+     {{- else if eq (include "clusterpedia.storage.type" .) "mysql" -}}
           {{- if not (empty .Values.mysql.auth.username) -}}
                {{- .Values.mysql.auth.username -}}
           {{- else -}}
