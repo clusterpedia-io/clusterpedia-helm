@@ -23,6 +23,13 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- printf "%s-%s" (include "common.names.fullname" .) "controller-manager" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "clusterpedia.kubeStateMetrics.fullname" -}}
+{{- printf "%s-%s" (include "common.names.fullname" .) "kube-state-metrics" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 
 {{/*
 Return the proper apiserver image name

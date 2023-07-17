@@ -124,6 +124,9 @@ spec:
         - --leader-elect-retry-period={{ .Values.clustersynchroManager.leaderElect.retryPeriod }}
         - --leader-elect-resource-lock={{ .Values.clustersynchroManager.leaderElect.resourceLock }}
         - --worker-number={{ .Values.clustersynchroManager.workerNumber }}
+        {{- if .Values.clustersynchroManager.kubeStateMetrics.enabled }}
+        - --enable-kube-state-metrics
+        {{- end }}
         {{- with (include "clusterpedia.clustersynchroManager.featureGates" .) }}
         - {{ . }}
         {{- end }}
