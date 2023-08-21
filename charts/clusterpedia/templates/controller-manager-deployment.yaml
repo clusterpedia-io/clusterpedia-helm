@@ -1,3 +1,4 @@
+{{- if not .Values.controllerManager.disabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,3 +53,4 @@ spec:
       {{- if .Values.controllerManager.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.controllerManager.tolerations "context" $) | nindent 8 }}
       {{- end }}
+{{- end }}
