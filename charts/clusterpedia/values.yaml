@@ -310,6 +310,8 @@ controllerManager:
   tolerations: []
   ## @param featureGate to controller
   featureGates: {}
+  ## @param disabled
+  # disabled: true
 
 ## @section PostgreSQL Parameters
 ##
