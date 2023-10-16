@@ -354,6 +354,18 @@ postgresql:
       ## @param primary.persistence.size PVC Storage Request for PostgreSQL volume
       ##
       size: 10Gi
+    ## @param mysql.resources
+    ##
+    resources:
+      {}
+    # If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
 
 ## @section mysql Parameters
 ##
@@ -408,6 +420,18 @@ mysql:
       ## @param primary.persistence.size MySQL primary persistent volume size
       ##
       size: 10Gi
+    ## @param mysql.resources
+    ##
+    resources:
+      {}
+    # If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
 
 hookJob:
   image:

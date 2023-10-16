@@ -177,6 +177,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | mysql.image.tag | string | `"8.0.28-debian-10-r23"` |  |
 | mysql.primary.persistence.enabled | bool | `true` |  |
 | mysql.primary.persistence.size | string | `"10Gi"` |  |
+| mysql.primary.resources | object | `{}` |  |
 | persistenceMatchNode | string | `""` |  |
 | postgresql.enabled | bool | `true` |  |
 | postgresql.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -186,6 +187,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | postgresql.image.tag | string | `"11.15.0-debian-10-r14"` |  |
 | postgresql.primary.persistence.enabled | bool | `true` |  |
 | postgresql.primary.persistence.size | string | `"10Gi"` |  |
+| postgresql.primary.resources | object | `{}` |  |
 | storageInstallMode | string | `"internal"` |  |
 
 ### StorageConfig
@@ -248,6 +250,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | clustersynchroManager.image.registry | string | `"ghcr.io"` |  |
 | clustersynchroManager.image.repository | string | `"clusterpedia-io/clusterpedia/clustersynchro-manager"` |  |
 | clustersynchroManager.image.tag | string | `"v0.7.0"` |  |
+| clustersynchroManager.kubeStateMetrics.enabled | bool | `false` |  |
 | clustersynchroManager.labels | object | `{}` |  |
 | clustersynchroManager.leaderElect.leaseDuration | string | `"15s"` |  |
 | clustersynchroManager.leaderElect.renewDeadline | string | `"10s"` |  |
