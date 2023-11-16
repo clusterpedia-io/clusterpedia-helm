@@ -1,0 +1,45 @@
+# validate any chart changes under charts directory
+name: Clusterpedia crd sync
+
+env:
+  CLUSTERPEDIA_REPO: https://github.com/clusterpedia-io/clusterpedia.git
+  TMP_DIR: /tmp/clusterpedia
+  CLUSTERPEDIA_CRD_DIR: deploy/crds
+  CLSUTERPEDIA_HELM_CRD_DIR: charts/clusterpedia/_crds
+  CHART_YAML_PATH: charts/clusterpedia/Chart.yaml
+  IGNORE_MATCHING_LINES: "helm.sh/resource-policy: keep"
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  crd-sync-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Lookup clusterpedia version
+      run: |
+        APP_VERSION=$(yq '.appVersion' < ${{ env.CHART_YAML_PATH }})
+        echo "APP_VERSION=${APP_VERSION,,}" >> ${GITHUB_ENV}
+    - name: Pull clusterpedia code
+      run: |
+        echo "chart appVersion: ${{ env.APP_VERSION }}"
+        echo "pull clusterpedia from https://github.com/clusterpedia-io/clusterpedia.git"
+        git clone --single-branch --depth 1 --branch ${{ env.APP_VERSION }} ${{ env.CLUSTERPEDIA_REPO }} ${{ env.TMP_DIR }}
+    - name: check whether crd is sync 
+      run: |
+        ret=0
+        diff -Naupr -I '${{ env.IGNORE_MATCHING_LINES }}' ${{ env.CLSUTERPEDIA_HELM_CRD_DIR }} ${{ env.TMP_DIR }}/${{ env.CLUSTERPEDIA_CRD_DIR }} || ret=$?
+        if [[ $ret -eq 1 ]]
+        then
+          echo "clusterpedia crd has been change, please update synchronouly this repo crd resource."
+          exit 1
+        fi
+    - name: cleanup
+      run: |
+        echo "remove clusterpedia code"
+        rm ${{ env.TMP_DIR }} -rf
