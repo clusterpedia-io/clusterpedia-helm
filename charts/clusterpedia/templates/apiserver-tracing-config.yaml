@@ -1,0 +1,17 @@
+{{- if or (not (empty .Values.apiserver.telemetry.tracing.endpoint)) (not (empty .Values.apiserver.telemetry.tracing.samplingRatePerMillion)) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "clusterpedia.apiserver.fullname" .}}-tracing-config
+  namespace: {{ .Release.Namespace }}
+data:
+  tracing-config.yaml: |
+    apiVersion: apiserver.config.k8s.io/v1beta1
+    kind: TracingConfiguration
+    {{- if not (empty .Values.apiserver.telemetry.tracing.endpoint) }}
+    endpoint: {{ .Values.apiserver.telemetry.tracing.endpoint }}
+    {{- end -}}
+    {{- if not (empty .Values.apiserver.telemetry.tracing.samplingRatePerMillion) }}
+    samplingRatePerMillion: {{ .Values.apiserver.telemetry.tracing.samplingRatePerMillion }}
+    {{- end -}}
+{{- end }}

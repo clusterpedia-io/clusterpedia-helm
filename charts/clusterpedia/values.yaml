@@ -166,8 +166,19 @@ apiserver:
     ## alpha: v0.3.0
     ## AllowRawSQLQuery: false
 
+    ## @param APIServerTracing add support for distributed tracing in the API Server
+    ## APIServerTracing: true
+
   ## @param apiserver.enableSHA1Cert specifies whether to allow SHA1 certificates for apiserver.
   enableSHA1Cert: false
+
+  ## @param telemetry define flag whether to enable otel trace
+  ##
+  telemetry:
+    tracing:
+      endpoint: ""   # example "localhost:4317"
+      samplingRatePerMillion: 0  # example 1000000, the number of samples to collect per million spans
+      addOtelEnv: false
 
 ## clustersynchro manager config
 clustersynchroManager:
