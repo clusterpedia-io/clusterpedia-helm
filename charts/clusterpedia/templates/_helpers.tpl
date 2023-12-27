@@ -361,3 +361,31 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- define "clusterpedia.hookJob.image" -}}
 {{ include "common.images.image" (dict "imageRoot" .Values.hookJob.image "global" .Values.global) }}
 {{- end -}}
+
+{{- define "clusterpedia.apiserver.tracing.env" -}}
+{{- if .Values.apiserver.telemetry.tracing.addOtelEnv }}
+{{- if not (empty .Values.apiserver.telemetry.tracing.endpoint) }}
+- name: OTEL_EXPORTER_OTLP_ENDPOINT
+  value: {{ .Values.apiserver.telemetry.tracing.endpoint }}
+{{- end }}
+- name: OTEL_SERVICE_NAME
+  value: {{ include "common.names.fullname" . }}-apiserver
+- name: OTEL_K8S_NAMESPACE
+  valueFrom:
+    fieldRef:
+      apiVersion: v1
+      fieldPath: metadata.namespace
+- name: OTEL_RESOURCE_ATTRIBUTES_NODE_NAME
+  valueFrom:
+    fieldRef:
+      apiVersion: v1
+      fieldPath: spec.nodeName
+- name: OTEL_RESOURCE_ATTRIBUTES_POD_NAME
+  valueFrom:
+    fieldRef:
+      apiVersion: v1
+      fieldPath: metadata.name
+- name: OTEL_RESOURCE_ATTRIBUTES
+  value: 'k8s.namespace.name=$(OTEL_K8S_NAMESPACE),k8s.node.name=$(OTEL_RESOURCE_ATTRIBUTES_NODE_NAME),k8s.pod.name=$(OTEL_RESOURCE_ATTRIBUTES_POD_NAME)'
+{{- end -}}
+{{- end -}}

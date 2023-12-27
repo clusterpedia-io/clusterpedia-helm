@@ -119,6 +119,9 @@ spec:
         - /usr/local/bin/apiserver
         - --secure-port=443
         - --storage-config=/etc/clusterpedia/storage/internalstorage-config.yaml
+        {{- if or (not (empty .Values.apiserver.telemetry.tracing.endpoint)) (not (empty .Values.apiserver.telemetry.tracing.samplingRatePerMillion)) }}
+        - --tracing-config-file=/etc/clusterpedia/trace/tracing-config.yaml
+        {{- end }}
         {{- with (include "clusterpedia.apiserver.featureGates" .) }}
         - {{ . }}
         {{- end }}
@@ -132,6 +135,7 @@ spec:
             secretKeyRef:
               name: {{ include "clusterpedia.internalstorage.fullname" . }}
               key: password
+        {{- include "clusterpedia.apiserver.tracing.env" . | nindent 8 }}
         {{- if .Values.apiserver.enableSHA1Cert }}
         - name: GODEBUG
           value: netdns=go,x509sha1=1
@@ -143,6 +147,11 @@ spec:
         - name: internalstorage-config
           mountPath: /etc/clusterpedia/storage
           readOnly: true
+        {{- if or (not (empty .Values.apiserver.telemetry.tracing.endpoint)) (not (empty .Values.apiserver.telemetry.tracing.samplingRatePerMillion)) }}
+        - name: tracing-config
+          mountPath: /etc/clusterpedia/trace
+          readOnly: true
+        {{- end }}
       serviceAccountName: {{ include "clusterpedia.apiserver.fullname" . }}
       {{- if .Values.apiserver.affinity }}
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.apiserver.affinity "context" $) | nindent 8 }}
@@ -160,3 +169,8 @@ spec:
         - name: scripts
           configMap:
             name: {{ include "clusterpedia.scripts.fullname" . }}
+        {{- if or (not (empty .Values.apiserver.telemetry.tracing.endpoint)) (not (empty .Values.apiserver.telemetry.tracing.samplingRatePerMillion)) }}
+        - name: tracing-config
+          configMap:
+            name: {{ include "clusterpedia.apiserver.fullname" .}}-tracing-config
+        {{- end }}

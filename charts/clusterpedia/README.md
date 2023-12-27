@@ -228,13 +228,14 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | apiserver.image.pullSecrets | list | `[]` |  |
 | apiserver.image.registry | string | `"ghcr.io"` |  |
 | apiserver.image.repository | string | `"clusterpedia-io/clusterpedia/apiserver"` |  |
-| apiserver.image.tag | string | `"v0.7.0"` |  |
+| apiserver.image.tag | string | `"v0.7.1"` |  |
 | apiserver.labels | object | `{}` |  |
 | apiserver.nodeSelector | object | `{}` |  |
 | apiserver.podAnnotations | object | `{}` |  |
 | apiserver.podLabels | object | `{}` |  |
 | apiserver.replicaCount | int | `1` |  |
 | apiserver.resources | object | `{}` |  |
+| apiserver.telemetry.tracing | object | `{}` |  |
 | apiserver.tolerations | list | `[]` |  |
 
 ### ClustersynchroManager
@@ -247,7 +248,8 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | clustersynchroManager.image.pullSecrets | list | `[]` |  |
 | clustersynchroManager.image.registry | string | `"ghcr.io"` |  |
 | clustersynchroManager.image.repository | string | `"clusterpedia-io/clusterpedia/clustersynchro-manager"` |  |
-| clustersynchroManager.image.tag | string | `"v0.7.0"` |  |
+| clustersynchroManager.image.tag | string | `"v0.7.1"` |  |
+| clustersynchroManager.kubeStateMetrics.enabled | bool | `false` |  |
 | clustersynchroManager.labels | object | `{}` |  |
 | clustersynchroManager.leaderElect.leaseDuration | string | `"15s"` |  |
 | clustersynchroManager.leaderElect.renewDeadline | string | `"10s"` |  |
@@ -271,7 +273,7 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 | controllerManager.image.pullSecrets | list | `[]` |  |
 | controllerManager.image.registry | string | `"ghcr.io"` |  |
 | controllerManager.image.repository | string | `"clusterpedia-io/clusterpedia/controller-manager"` |  |
-| controllerManager.image.tag | string | `"v0.7.0"` |  |
+| controllerManager.image.tag | string | `"v0.7.1"` |  |
 | controllerManager.labels | object | `{}` |  |
 | controllerManager.nodeSelector | object | `{}` |  |
 | controllerManager.podAnnotations | object | `{}` |  |
