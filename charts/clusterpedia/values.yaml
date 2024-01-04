@@ -126,7 +126,7 @@ apiserver:
   image:
     registry: ghcr.io
     repository: clusterpedia-io/clusterpedia/apiserver
-    tag: v0.7.1
+    tag: v0.8.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ##
@@ -201,7 +201,7 @@ clustersynchroManager:
   image:
     registry: ghcr.io
     repository: clusterpedia-io/clusterpedia/clustersynchro-manager
-    tag: v0.7.1
+    tag: v0.8.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ##
@@ -265,6 +265,19 @@ clustersynchroManager:
     ## alpha: v0.8.0
     ## IgnoreSyncLease: false
 
+    ## @param ForcePaginatedListForResourceSync is a feature gate for ResourceSync's reflector to force paginated list,
+    ## reflector will sometimes use APIServer's cache, even if paging is specified APIServer will return all resources for performance,
+    ## then it will skip Reflector's streaming memory optimization.
+    ## owner: @iceber
+    ## alpha: v0.8.0
+    ## ForcePaginatedListForResourceSync featuregate.Feature = "ForcePaginatedListForResourceSync"
+
+    ## StreamHandlePaginatedListForResourceSync is a feature gate for ResourceSync's reflector to handle echo paginated resources,
+    ## resources within a pager will be processed as soon as possible instead of waiting until all resources are pulled before calling the ResourceHandler.
+    ## owner: @iceber
+    ## alpha: v0.8.0
+    ## StreamHandlePaginatedListForResourceSync featuregate.Feature = "StreamHandlePaginatedListForResourceSync"
+
   ## @param clustersynchroManager.leaderElect.leaseDuration the duration that non-leader candidates will wait after observing a leadership renewal
   ## @param clustersynchroManager.leaderElect.renewDeadline the interval between attempts by the acting master to renew a leadership slot before it stops leading
   ## @param clustersynchroManager.leaderElect.retryPeriod the duration the clients should wait between attempting acquisition and renewal of a leadership
@@ -297,7 +310,7 @@ controllerManager:
   image:
     registry: ghcr.io
     repository: clusterpedia-io/clusterpedia/controller-manager
-    tag: v0.7.1
+    tag: v0.8.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ##
