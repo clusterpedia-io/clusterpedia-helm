@@ -6,23 +6,6 @@ metadata:
   labels: {{- include "common.labels.standard" . | nindent 4 }}
 data:
   parse-yaml.sh: |
-    function parse_yaml() {
-      local prefix=$2
-      local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
-      sed -ne "s|^\($s\):|\1|" \
-            -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
-            -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
-      awk -F$fs '{
-          indent = length($1)/2;
-          vname[indent] = $2;
-          for (i in vname) {if (i > indent) {delete vname[i]}}
-          if (length($3) > 0) {
-            vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
-            printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
-          }
-      }'
-    }
-
     function parse_mysql_dsn() {
         local dsn=$1
         if [ -z $dsn ]
@@ -41,11 +24,11 @@ data:
             IFS=':' read -r -a address <<< $address; host=${address[0]}; port=${address[1]}
         fi
 
-        echo "database=\"$database\""
-        echo "host=\"$host\""
-        echo "port=\"$port\""
-        echo "user=\"$user\""
-        echo "password=\"$password\""
+        echo "DB_DATABASE=\"$database\""
+        echo "DB_HOST=\"$host\""
+        echo "DB_PORT=\"$port\""
+        echo "DB_USER=\"$user\""
+        echo "DB_PASSWORD=\"$password\""
     }
     
     function parse_postgres_dsn() {
@@ -63,6 +46,9 @@ data:
             if [[ $kv == "user"* ]]; then
             IFS='=' read -r -a _kv <<< $kv; user=${_kv[1]}
             fi
+            if [[ $kv == "password"* ]]; then
+            IFS='=' read -r -a _kv <<< $kv; password=${_kv[1]}
+            fi
             if [[ $kv == "port"* ]]; then
             IFS='=' read -r -a _kv <<< $kv; port=${_kv[1]}
             fi
@@ -71,23 +57,21 @@ data:
             fi
         done
     
-        echo "database=\"$database\""
-        echo "host=\"$host\""
-        echo "port=\"$port\""
-        echo "user=\"$user\""
+        echo "DB_DATABASE=\"$database\""
+        echo "DB_HOST=\"$host\""
+        echo "DB_PORT=\"$port\""
+        echo "DB_USER=\"$user\""
+        echo "PGPASSWORD=\"$password\""
     }
 
     function create_variables() {
-        local yaml_file="$1"
-        eval "$(parse_yaml "$yaml_file")"
-
-        if [ $type == "mysql" ]
+        if [ $DB_TYPE == "mysql" ]
         then
-            eval $(parse_mysql_dsn "$dsn")
+            eval $(parse_mysql_dsn "$DB_DSN")
         fi
     
-        if [ $type == "postgres" ]
+        if [ $DB_TYPE == "postgres" ]
         then
-            eval $(parse_postgres_dsn "$dsn")
+            eval $(parse_postgres_dsn "$DB_DSN")
         fi
     }
