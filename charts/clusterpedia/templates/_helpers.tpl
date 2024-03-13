@@ -171,22 +171,22 @@ Return the proper Docker Image Registry Secret Names
 {{- define "clusterpedia.storage.password" -}}
 {{- if eq .Values.storageInstallMode "external" }}
      {{- if empty (include "clusterpedia.storage.dsn" .) -}}
-         {{- required "Please set correct storage password!" .Values.externalStorage.password | toString | b64enc -}}
+         {{- required "Please set correct storage password!" .Values.externalStorage.password | toString -}}
      {{- else -}}
-         {{- .Values.externalStorage.password | toString | b64enc -}}
+         {{- .Values.externalStorage.password | toString -}}
      {{- end -}}
 {{- else -}}
      {{- if eq (include "clusterpedia.storage.type" .) "postgres" }}
           {{- if not (empty .Values.global.postgresql.auth.username) -}}
-               {{- .Values.global.postgresql.auth.password | toString | b64enc -}}
+               {{- .Values.global.postgresql.auth.password | toString -}}
           {{- else -}}
-               {{- .Values.global.postgresql.auth.postgresPassword | toString | b64enc -}}
+               {{- .Values.global.postgresql.auth.postgresPassword | toString -}}
           {{- end -}}
      {{- else if eq (include "clusterpedia.storage.type" .) "mysql" -}}
           {{- if not (empty .Values.mysql.auth.username) -}}
-               {{- .Values.mysql.auth.password | toString | b64enc -}}
+               {{- .Values.mysql.auth.password | toString -}}
           {{- else -}}
-               {{- .Values.mysql.auth.rootPassword | toString | b64enc -}}
+               {{- .Values.mysql.auth.rootPassword | toString -}}
           {{- end -}}
      {{- end -}}
 {{- end -}}

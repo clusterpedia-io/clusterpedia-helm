@@ -39,33 +39,30 @@ spec:
           {{- if eq (include "clusterpedia.storage.type" .) "postgres" }}
           - |
             # Load YAML data into a Bash variable
-            source /opt/scripts/parse-yaml.sh;
-            create_variables /etc/clusterpedia/storage/internalstorage-config.yaml;
-            until psql -U ${user} -h ${host} -p ${port} postgres -c "SELECT 1 FROM pg_database WHERE datname = ${database}" | grep -q 1 || psql -U ${user} -h ${host} -p ${port} postgres -c "CREATE DATABASE ${database} owner ${user} " -c "GRANT ALL PRIVILEGES ON DATABASE ${database} to ${user}"; do
+            if [ -n ${DB_DSN} ]; then source /opt/scripts/parse-yaml.sh; create_variables ${DB_DSN}; fi;
+            until psql -U ${DB_USER} -h ${DB_HOST} -p ${DB_PORT} postgres -c "SELECT 1 FROM pg_database WHERE datname = ${DB_DATABASE}" | grep -q 1 || psql -U ${DB_USER} -h ${DB_HOST} -p ${DB_PORT} postgres -c "CREATE DATABASE ${DB_DATABASE} owner ${DB_USER} " -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_DATABASE} to ${DB_USER}"; do
             echo waiting for database check && sleep 1;
             done;
             echo 'DataBase OK ✓'
           {{- else if eq (include "clusterpedia.storage.type" .) "mysql" }}
           - |
             # Load YAML data into a Bash variable
-            source /opt/scripts/parse-yaml.sh;
-            create_variables /etc/clusterpedia/storage/internalstorage-config.yaml;
-            if [ -z $password ]; then password=${DB_PASSWORD}; fi;
-            until mysql -u${user} -p${password} --host=${host} --port=${port} -e "CREATE DATABASE IF NOT EXISTS ${database}"; do
+            if [ -n ${DB_DSN} ]; then source /opt/scripts/parse-yaml.sh; create_variables ${DB_DSN}; fi;
+            until mysql -u${DB_USER} -p${DB_PASSWORD} --host=${DB_HOST} --port=${DB_PORT} -e "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE}"; do
             echo waiting for database check && sleep 1;
             done;
             echo 'DataBase OK ✓'
           {{- end }}
+        envFrom:
+          - secretRef:
+              name: {{ include "clusterpedia.internalstorage.fullname" . }}
         env:
           - name: {{ include "clusterpedia.storage.password.envKey" . }}
             valueFrom:
               secretKeyRef:
                 name: {{ include "clusterpedia.internalstorage.fullname" . }}
-                key: password
+                key: DB_PASSWORD
         volumeMounts:
-        - name: internalstorage-config
-          mountPath: /etc/clusterpedia/storage
-          readOnly: true
         - name: scripts
           mountPath: /opt/scripts
           readOnly: true
@@ -78,35 +75,24 @@ spec:
           {{- if eq (include "clusterpedia.storage.type" .) "postgres" }}
           - |
             # Load YAML data into a Bash variable
-            source /opt/scripts/parse-yaml.sh;
-            create_variables /etc/clusterpedia/storage/internalstorage-config.yaml;
-            until pg_isready -U ${user} -d "dbname=${database}" -h ${host} -p ${port}; do
+            if [ -n ${DB_DSN} ]; then source /opt/scripts/parse-yaml.sh; create_variables ${DB_DSN}; fi;
+            until pg_isready -U ${DB_USER} -d "dbname=${DB_DATABASE}" -h ${DB_HOST} -p ${DB_PORT}; do
             echo waiting for database check && sleep 1; 
             done;
             echo 'DataBase OK ✓'
           {{- else if eq (include "clusterpedia.storage.type" .) "mysql" }}
           - |
             # Load YAML data into a Bash variable
-            source /opt/scripts/parse-yaml.sh;
-            create_variables /etc/clusterpedia/storage/internalstorage-config.yaml;
-            if [ -z $password ]; then password=${DB_PASSWORD}; fi;
-            until mysqladmin status -u${user} -p${password} --host=${host} --port=${port}; do
+            if [ -n ${DB_DSN} ]; then source /opt/scripts/parse-yaml.sh; create_variables ${DB_DSN}; fi;
+            until mysqladmin status -u${DB_USER} -p${DB_PASSWORD} --host=${DB_HOST} --port=${DB_PORT}; do
             echo waiting for database check && sleep 1; 
             done;
             echo 'DataBase OK ✓'
           {{- end }}
-      {{- if eq (include "clusterpedia.storage.type" .) "mysql" }}
-        env:
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "clusterpedia.internalstorage.fullname" . }}
-                key: password
-      {{- end }}
+        envFrom:
+          - secretRef:
+              name: {{ include "clusterpedia.internalstorage.fullname" . }}
         volumeMounts:
-        - name: internalstorage-config
-          mountPath: /etc/clusterpedia/storage
-          readOnly: true
         - name: scripts
           mountPath: /opt/scripts
           readOnly: true
@@ -129,12 +115,10 @@ spec:
         {{- if .Values.apiserver.resources }}
         resources: {{- toYaml .Values.apiserver.resources | nindent 12 }}
         {{- end }}
-        env:
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
+        envFrom:
+          - secretRef:
               name: {{ include "clusterpedia.internalstorage.fullname" . }}
-              key: password
+        env:
         {{- include "clusterpedia.apiserver.tracing.env" . | nindent 8 }}
         {{- if .Values.apiserver.enableSHA1Cert }}
         - name: GODEBUG
@@ -163,6 +147,9 @@ spec:
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.apiserver.tolerations "context" $) | nindent 8 }}
       {{- end }}
       volumes:
+        - name: internalstorage-connection-config
+          secret:
+            secretName: {{ include "clusterpedia.internalstorage.fullname" . }}
         - name: internalstorage-config
           configMap:
             name: {{ include "clusterpedia.internalstorage.fullname" . }}
