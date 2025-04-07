@@ -1,0 +1,20 @@
+{{- if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "clusterpedia.clustersynchroManager.fullname" . }}-service-monitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
+    {{- if .Values.clustersynchroManager.serviceMonitor.labels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.clustersynchroManager.serviceMonitor.labels "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
+      {{- include "common.labels.standard" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+{{- end }}
