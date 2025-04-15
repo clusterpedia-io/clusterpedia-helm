@@ -3,7 +3,9 @@ kind: Service
 metadata:
   name: {{ include "clusterpedia.clustersynchroManager.fullname" . }}-metrics
   namespace: {{ .Release.Namespace }}
-  labels: {{- include "common.labels.standard" . | nindent 4 }}
+  labels:
+    app: {{ include "clusterpedia.clustersynchroManager.fullname" . }}
+    {{- include "common.labels.standard" . | nindent 4 }}
 spec:
   ports:
   - name: metrics

@@ -277,6 +277,8 @@ clustersynchroManager:
     resourceLock: "leases"
   kubeStateMetrics:
     enabled: false
+  serviceMonitor:
+    labels: {}
 
 ## controller manager config
 controllerManager:
