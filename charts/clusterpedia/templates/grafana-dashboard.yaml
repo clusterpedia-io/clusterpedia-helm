@@ -1,0 +1,32 @@
+{{ if .Values.dashboard.enabled }}
+{{ if .Capabilities.APIVersions.Has "integreatly.org/v1alpha1/GrafanaDashboard" -}}
+{{ $currentScope := .}}
+{{- $name := include  "common.names.fullname" . -}}
+{{- $namespace := .Release.Namespace }}
+{{ range $filePath, $_ := .Files.Glob "dashboards/*.json" }}
+{{- $basename := regexReplaceAll "\\.json$" $filePath "" -}}
+{{- $id := regexReplaceAll "dashboards/" $basename "" -}}
+apiVersion: integreatly.org/v1alpha1
+kind: GrafanaDashboard
+metadata:
+  name: {{ $name }}-{{ $id }}
+  namespace: {{ $namespace }}
+  labels: {{- include "common.labels.standard" $ | nindent 4 }}
+  {{- if $.Values.dashboard.labels }}
+  {{- include "common.tplvalues.render" (dict "value" $.Values.dashboard.labels "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if $.Values.commonLabels }}
+  {{- include "common.tplvalues.render" ( dict "value" $.Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- end }}
+  {{- if $.Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with $currentScope }}
+  json: |-
+    {{ .Files.Get $filePath | nindent 4 }}
+  {{- end }}
+---
+{{- end }}
+{{ end }}
+{{ end }}
