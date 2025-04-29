@@ -7,6 +7,10 @@ To learn more about the release, try:
   $ helm status {{ .Release.Name }}
   $ helm get all {{ .Release.Name }}
 
+{{ if and .Values.vmrule.enabled (not (.Capabilities.APIVersions.Has "operator.victoriametrics.com/v1beta1/VMRule")) }}
+  {{ printf "WARNING: clusterpedia requires the operator.victoriametrics.com/v1beta1.VMRule, when the vmrule is enabled." }}
+{{ end }}
+
 Documentation: https://clusterpedia.io/docs/
 
 View imported clusters:
