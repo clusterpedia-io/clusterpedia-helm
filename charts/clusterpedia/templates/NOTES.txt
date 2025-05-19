@@ -11,6 +11,10 @@ To learn more about the release, try:
   {{ printf "WARNING: clusterpedia requires the integreatly.org/v1alpha1.GrafanaDashboard, when the dashboard is enabled." }}
 {{ end }}
 
+{{ if and .Values.clustersynchroManager.vmrule.enabled (not (.Capabilities.APIVersions.Has "operator.victoriametrics.com/v1beta1/VMRule")) }}
+  {{ printf "WARNING: clusterpedia requires the operator.victoriametrics.com/v1beta1.VMRule, when the clustersynchro manager vmrule is enabled." }}
+{{ end }}
+
 Documentation: https://clusterpedia.io/docs/
 
 View imported clusters:

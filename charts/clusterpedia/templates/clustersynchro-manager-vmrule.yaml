@@ -1,0 +1,90 @@
+{{ if .Values.clustersynchroManager.vmrule.enabled }}
+{{ if .Capabilities.APIVersions.Has "operator.victoriametrics.com/v1beta1/VMRule" -}}
+{{- $name := include "clusterpedia.clustersynchroManager.fullname" . -}}
+{{- $namespace := .Release.Namespace }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name:  {{ $name }}-vmrule
+  namespace: {{ $namespace }}
+  labels: {{- include "common.labels.standard" $ | nindent 4 }}
+  {{- if $.Values.clustersynchroManager.vmrule.labels }}
+  {{- include "common.tplvalues.render" (dict "value" $.Values.clustersynchroManager.vmrule.labels "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if $.Values.commonLabels }}
+  {{- include "common.tplvalues.render" ( dict "value" $.Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- end }}
+  {{- if $.Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  groups:
+    - name: clustersynchro-manager
+      rules:
+        - alert: ClusterSynchroDroppedHighWarning
+          expr: |-
+            sum without (instance, pod) (rate(clustersynchro_resourcesynchro_failed_resource_total{}[10m]))
+            >
+              0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: High rate of dropped resources in ClusterSynchro.
+            description: The ClusterSynchro has a high rate of dropped resources {{`{{`}} $value {{`}}`}} over the past 10 minutes.
+        - alert: ClusterSynchroFailedHighWarning
+          expr: |-
+            sum without (instance, pod) (rate(clustersynchro_resourcesynchro_resource_failed_total{}[10m]))
+            >
+              0.03
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: High rate of resource failures in ClusterSynchro.
+            description: The ClusterSynchro has a high rate of resource failures {{`{{`}} $value {{`}}`}} over the past 10 minutes.
+        - alert: ClusterSynchroFailedHigh
+          expr: |-
+            sum without (instance, pod) (rate(clustersynchro_resourcesynchro_resource_failed_total{}[10m]))
+            >
+              0.05
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: High rate of resource failures in ClusterSynchro.
+            description: The ClusterSynchro has a critically high rate of resource failures {{`{{`}} $value {{`}}`}} over the past 10 minutes.
+        - alert: ClusterSynchroLatencyHighWarning
+          expr: |-
+            histogram_quantile(
+                0.75,
+                sum without (instance, pod) (
+                  rate(clustersynchro_resourcesynchro_storage_duration_seconds_bucket{}[5m])
+                )
+              )
+            >
+              3
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: High 75th percentile latency in ClusterSynchro.
+            description: The ClusterSynchro has a 75th percentile latency of {{`{{`}} $value {{`}}`}} seconds.
+        - alert: ClusterSynchroLatencyHigh
+          expr: |-
+            histogram_quantile(
+                0.99,
+                sum without (instance, pod) (
+                  rate(clustersynchro_resourcesynchro_storage_duration_seconds_bucket{}[5m])
+                )
+              )
+            >
+              5
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: High 99th percentile latency in ClusterSynchro.
+            description: The ClusterSynchro has a 99th percentile latency of {{`{{`}} $value {{`}}`}} seconds.
+{{ end }}
+{{ end }}

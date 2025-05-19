@@ -279,6 +279,9 @@ clustersynchroManager:
     enabled: false
   serviceMonitor:
     labels: {}
+  vmrule:
+    enabled: false
+    labels: {}
 
 ## controller manager config
 controllerManager:
