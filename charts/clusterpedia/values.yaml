@@ -429,6 +429,10 @@ mysql:
       ##
       size: 10Gi
 
+dashboard:
+  enabled: false
+  labels: {}
+
 hookJob:
   image:
     registry: ghcr.io
