@@ -180,6 +180,9 @@ apiserver:
       samplingRatePerMillion: 0  # example 1000000, the number of samples to collect per million spans
       addOtelEnv: false
 
+  ## @param extraFlags define command flags
+  extraFlags: []
+
 ## clustersynchro manager config
 clustersynchroManager:
   ## @param clustersynchroManager.workerNumber set the number of workers
@@ -282,6 +285,9 @@ clustersynchroManager:
   vmrule:
     enabled: false
     labels: {}
+
+  ## @param extraFlags define command flags
+  extraFlags: []
 
 ## controller manager config
 controllerManager:
