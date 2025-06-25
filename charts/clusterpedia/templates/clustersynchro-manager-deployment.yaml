@@ -127,6 +127,9 @@ spec:
         {{- if .Values.clustersynchroManager.kubeStateMetrics.enabled }}
         - --enable-kube-state-metrics
         {{- end }}
+        {{- if .Values.clustersynchroManager.extraFlags }}
+        {{- toYaml .Values.clustersynchroManager.extraFlags | nindent 8 }}
+        {{- end }}
         {{- with (include "clusterpedia.clustersynchroManager.featureGates" .) }}
         - {{ . }}
         {{- end }}

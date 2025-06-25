@@ -122,6 +122,9 @@ spec:
         {{- if or (not (empty .Values.apiserver.telemetry.tracing.endpoint)) (not (empty .Values.apiserver.telemetry.tracing.samplingRatePerMillion)) }}
         - --tracing-config-file=/etc/clusterpedia/trace/tracing-config.yaml
         {{- end }}
+        {{- if .Values.apiserver.extraFlags }}
+        {{- toYaml .Values.apiserver.extraFlags | nindent 8 }}
+        {{- end }}
         {{- with (include "clusterpedia.apiserver.featureGates" .) }}
         - {{ . }}
         {{- end }}
