@@ -4,7 +4,7 @@ name: Clusterpedia crd sync
 env:
   CLUSTERPEDIA_REPO: https://github.com/clusterpedia-io/clusterpedia.git
   TMP_DIR: /tmp/clusterpedia
-  CLUSTERPEDIA_CRD_DIR: deploy/crds
+  CLUSTERPEDIA_CRD_DIR: kustomize/crds
   CLSUTERPEDIA_HELM_CRD_DIR: charts/clusterpedia/_crds
   CHART_YAML_PATH: charts/clusterpedia/Chart.yaml
   IGNORE_MATCHING_LINES: "helm.sh/resource-policy: keep"
@@ -33,7 +33,7 @@ jobs:
     - name: check whether crd is sync 
       run: |
         ret=0
-        diff -Naupr -I '${{ env.IGNORE_MATCHING_LINES }}' ${{ env.CLSUTERPEDIA_HELM_CRD_DIR }} ${{ env.TMP_DIR }}/${{ env.CLUSTERPEDIA_CRD_DIR }} || ret=$?
+        diff -Naupr --exclude=kustomization.yaml -I '${{ env.IGNORE_MATCHING_LINES }}' ${{ env.CLSUTERPEDIA_HELM_CRD_DIR }} ${{ env.TMP_DIR }}/${{ env.CLUSTERPEDIA_CRD_DIR }} || ret=$?
         if [[ $ret -eq 1 ]]
         then
           echo "clusterpedia crd has been change, please update synchronouly this repo crd resource."
