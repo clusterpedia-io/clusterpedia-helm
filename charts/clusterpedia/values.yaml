@@ -383,8 +383,8 @@ postgresql:
   ##
   image:
     registry: docker.io
-    repository: bitnami/postgresql
-    tag: 11.15.0-debian-10-r14
+    repository: bitnamilegacy/postgresql
+    tag: 11.15.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ##
@@ -424,8 +424,8 @@ mysql:
   ##
   image:
     registry: docker.io
-    repository: bitnami/mysql
-    tag: 8.0.28-debian-10-r23
+    repository: bitnamilegacy/mysql
+    tag: 8.0.40-debian-12-r5
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ##
