@@ -131,7 +131,7 @@ Return the proper Docker Image Registry Secret Names
 
 {{- define "clusterpedia.storage.dsn" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-{{- if not (empty .Values.externalStorage.dsn) -}}
+{{- if and (kindIs "string" .Values.externalStorage.dsn) (not (empty .Values.externalStorage.dsn)) -}}
      {{- if eq .Values.externalStorage.type "mysql" }}
          {{- .Values.externalStorage.dsn }}
      {{- else if eq (include "clusterpedia.storage.type" .) "postgres" -}}
@@ -143,10 +143,44 @@ Return the proper Docker Image Registry Secret Names
 {{- end -}}
 {{- end -}}
 
+{{- define "clusterpedia.storage.dsn.configured" -}}
+{{- if eq .Values.storageInstallMode "external" -}}
+     {{- if kindIs "map" .Values.externalStorage.dsn -}}
+          {{- if not (kindIs "map" .Values.externalStorage.dsn.secretKeyRef) -}}
+               {{- fail "externalStorage.dsn must be a string or contain secretKeyRef.name and secretKeyRef.key" -}}
+          {{- end -}}
+          {{- $secretName := required "externalStorage.dsn.secretKeyRef.name is required" .Values.externalStorage.dsn.secretKeyRef.name -}}
+          {{- $secretKey := required "externalStorage.dsn.secretKeyRef.key is required" .Values.externalStorage.dsn.secretKeyRef.key -}}
+          {{- if not (or (eq .Values.externalStorage.type "mysql") (eq .Values.externalStorage.type "postgres")) -}}
+               {{- fail "storage dsn only supports mysql or postgres" -}}
+          {{- end -}}
+          {{- "true" -}}
+     {{- else if and (kindIs "string" .Values.externalStorage.dsn) (not (empty .Values.externalStorage.dsn)) -}}
+          {{- "true" -}}
+     {{- else if not (kindIs "string" .Values.externalStorage.dsn) -}}
+          {{- fail "externalStorage.dsn must be a string or contain secretKeyRef.name and secretKeyRef.key" -}}
+     {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "clusterpedia.storage.dsn.secretConfigured" -}}
+{{- if and (eq .Values.storageInstallMode "external") (kindIs "map" .Values.externalStorage.dsn) -}}
+     {{- include "clusterpedia.storage.dsn.configured" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "clusterpedia.storage.dsn.secretName" -}}
+{{- required "externalStorage.dsn.secretKeyRef.name is required" .Values.externalStorage.dsn.secretKeyRef.name -}}
+{{- end -}}
+
+{{- define "clusterpedia.storage.dsn.secretKey" -}}
+{{- required "externalStorage.dsn.secretKeyRef.key is required" .Values.externalStorage.dsn.secretKeyRef.key -}}
+{{- end -}}
+
 
 {{- define "clusterpedia.storage.user" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+     {{- if empty (include "clusterpedia.storage.dsn.configured" .) -}}
          {{- required "Please set correct storage user!" .Values.externalStorage.user -}}
      {{- else -}}
          {{- .Values.externalStorage.user -}}
@@ -170,7 +204,7 @@ Return the proper Docker Image Registry Secret Names
 
 {{- define "clusterpedia.storage.password" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+     {{- if empty (include "clusterpedia.storage.dsn.configured" .) -}}
          {{- required "Please set correct storage password!" .Values.externalStorage.password | toString | b64enc -}}
      {{- else -}}
          {{- .Values.externalStorage.password | toString | b64enc -}}
@@ -195,7 +229,7 @@ Return the proper Docker Image Registry Secret Names
 {{/* use the default port */}}
 {{- define "clusterpedia.storage.port" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+     {{- if empty (include "clusterpedia.storage.dsn.configured" .) -}}
          {{- required "Please set correct storage port!" .Values.externalStorage.port -}}
      {{- else -}}
          {{- .Values.externalStorage.port }}
@@ -212,7 +246,7 @@ Return the proper Docker Image Registry Secret Names
 {{/* use the default port */}}
 {{- define "clusterpedia.storage.host" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+     {{- if empty (include "clusterpedia.storage.dsn.configured" .) -}}
          {{- required "Please set correct storage host!" .Values.externalStorage.host -}}
      {{- else -}}
          {{- .Values.externalStorage.host }}
@@ -228,7 +262,7 @@ Return the proper Docker Image Registry Secret Names
 
 {{- define "clusterpedia.storage.database" -}}
 {{- if eq .Values.storageInstallMode "external" }}
-     {{- if empty (include "clusterpedia.storage.dsn" .) -}}
+     {{- if empty (include "clusterpedia.storage.dsn.configured" .) -}}
           {{- required "Please set correct storage database!" .Values.externalStorage.database -}}
      {{- else -}}
           {{- .Values.externalStorage.database -}}

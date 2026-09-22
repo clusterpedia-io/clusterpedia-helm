@@ -7,87 +7,186 @@ metadata:
 data:
   parse-yaml.sh: |
     function parse_yaml() {
-      local prefix=$2
+      local prefix=${2:-}
       local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
       sed -ne "s|^\($s\):|\1|" \
             -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
-            -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+            -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  "$1" |
       awk -F$fs '{
           indent = length($1)/2;
           vname[indent] = $2;
           for (i in vname) {if (i > indent) {delete vname[i]}}
           if (length($3) > 0) {
             vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
-            printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+            printf("%s%s%s%c%s\n", "'$prefix'",vn, $2, 28, $3);
           }
       }'
     }
 
     function parse_mysql_dsn() {
-        local dsn=$1
-        if [ -z $dsn ]
+        local dsn_value=${1:-}
+        local connection credentials_address credentials network_address address
+        if [ -z "$dsn_value" ]
         then
             return
         fi
 
-        IFS='?' read -r -a _dsn <<< $dsn; upnad=${_dsn[0]}
-        IFS='/' read -a upnad <<< $upnad; upna=${upnad[0]}; database=${upnad[1]}
-        IFS='(' read -a upna <<< $upna ; upn=${upna[0]}; address=${upna[1]%?}
-        IFS='@' read -r -a upn <<< $upn; up=${upn[0]}; protocal=${upn[1]}
-        IFS=':' read -r -a up <<< $up; user=${up[0]}; password=${up[1]}
-
-        if [ ! -z $address ]
-        then
-            IFS=':' read -r -a address <<< $address; host=${address[0]}; port=${address[1]}
+        connection=${dsn_value%%\?*}
+        credentials_address=${connection%/*}
+        database=${connection##*/}
+        credentials=${credentials_address%@*}
+        network_address=${credentials_address##*@}
+        user=${credentials%%:*}
+        if [[ "$credentials" == *:* ]]; then
+            password=${credentials#*:}
         fi
 
-        echo "database=\"$database\""
-        echo "host=\"$host\""
-        echo "port=\"$port\""
-        echo "user=\"$user\""
-        echo "password=\"$password\""
+        if [[ "$network_address" == *"("* ]]; then
+            address=${network_address#*(}
+            address=${address%)}
+            host=${address%:*}
+            port=${address##*:}
+            host=${host#[}
+            host=${host%]}
+        else
+            host=$network_address
+        fi
     }
-    
+
     function parse_postgres_dsn() {
-        local dsn=$1
-        if [ -z $dsn ]
+        local dsn_value=${1:-}
+        local key value char found_equals quoted_closed
+        local index=0
+        local length=${#dsn_value}
+        if [ -z "$dsn_value" ]
         then
             return
         fi
 
-        kvpairs=($dsn)
-        for kv in "${kvpairs[@]}"; do
-            if [[ $kv == "host"* ]]; then
-            IFS='=' read -r -a _kv <<< $kv; host=${_kv[1]}
+        while (( index < length )); do
+            while (( index < length )) && [[ "${dsn_value:index:1}" =~ [[:space:]] ]]; do
+                ((index += 1))
+            done
+
+            key=""
+            found_equals=false
+            while (( index < length )); do
+                char=${dsn_value:index:1}
+                if [ "$char" = "=" ]; then
+                    found_equals=true
+                    ((index += 1))
+                    break
+                fi
+                if [[ "$char" =~ [[:space:]] ]]; then
+                    echo "invalid PostgreSQL DSN: expected '=' after '$key'" >&2
+                    return 1
+                fi
+                key+=$char
+                ((index += 1))
+            done
+            if [ "$found_equals" != true ]; then
+                echo "invalid PostgreSQL DSN: expected '=' after '$key'" >&2
+                return 1
             fi
-            if [[ $kv == "user"* ]]; then
-            IFS='=' read -r -a _kv <<< $kv; user=${_kv[1]}
+
+            while (( index < length )) && [[ "${dsn_value:index:1}" =~ [[:space:]] ]]; do
+                ((index += 1))
+            done
+
+            value=""
+            if (( index < length )) && [ "${dsn_value:index:1}" = "'" ]; then
+                ((index += 1))
+                quoted_closed=false
+                while (( index < length )); do
+                    char=${dsn_value:index:1}
+                    ((index += 1))
+                    if [ "$char" = "'" ]; then
+                        quoted_closed=true
+                        break
+                    fi
+                    if [ "$char" = "\\" ] && (( index < length )); then
+                        char=${dsn_value:index:1}
+                        ((index += 1))
+                    fi
+                    value+=$char
+                done
+                if [ "$quoted_closed" != true ]; then
+                    echo "invalid PostgreSQL DSN: unterminated quoted value for '$key'" >&2
+                    return 1
+                fi
+            else
+                while (( index < length )) && [[ ! "${dsn_value:index:1}" =~ [[:space:]] ]]; do
+                    char=${dsn_value:index:1}
+                    ((index += 1))
+                    if [ "$char" = "\\" ] && (( index < length )); then
+                        char=${dsn_value:index:1}
+                        ((index += 1))
+                    fi
+                    value+=$char
+                done
             fi
-            if [[ $kv == "port"* ]]; then
-            IFS='=' read -r -a _kv <<< $kv; port=${_kv[1]}
-            fi
-            if [[ $kv == "dbname"* ]]; then
-            IFS='=' read -r -a _kv <<< $kv; database=${_kv[1]}
-            fi
+
+            case "$key" in
+                host) host=$value ;;
+                user) user=$value ;;
+                port) port=$value ;;
+                dbname) database=$value ;;
+                password) password=$value ;;
+            esac
         done
-    
-        echo "database=\"$database\""
-        echo "host=\"$host\""
-        echo "port=\"$port\""
-        echo "user=\"$user\""
+    }
+
+    function quote_postgres_literal() {
+        local value=${1:-}
+        printf '%s' "${value//\'/\'\'}"
+    }
+
+    function quote_postgres_identifier() {
+        local value=${1:-}
+        printf '%s' "${value//\"/\"\"}"
+    }
+
+    function quote_mysql_identifier() {
+        local value=${1:-}
+        printf '%s' "${value//\`/\`\`}"
     }
 
     function create_variables() {
         local yaml_file="$1"
-        eval "$(parse_yaml "$yaml_file")"
+        local variable value
+        type=""
+        dsn=""
+        host=""
+        port=""
+        user=""
+        password=""
+        database=""
 
-        if [ $type == "mysql" ]
+        while IFS=$'\034' read -r variable value
+        do
+            case "$variable" in
+                type|dsn|host|port|user|database)
+                    printf -v "$variable" '%s' "$value"
+                    ;;
+            esac
+        done < <(parse_yaml "$yaml_file")
+
+        if [ -n "${DB_DSN:-}" ]
         then
-            eval $(parse_mysql_dsn "$dsn")
+            dsn="$DB_DSN"
+        fi
+
+        if [ "$type" = "mysql" ]
+        then
+            parse_mysql_dsn "$dsn"
         fi
     
-        if [ $type == "postgres" ]
+        if [ "$type" = "postgres" ]
         then
-            eval $(parse_postgres_dsn "$dsn")
+            parse_postgres_dsn "$dsn"
+            if [ -n "${password:-}" ]
+            then
+                export PGPASSWORD="$password"
+            fi
         fi
     }
