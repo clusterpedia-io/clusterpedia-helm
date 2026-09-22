@@ -210,7 +210,9 @@ rm /var/local/clusterpedia/internalstorage/<storage type>
 |-----|------|---------|-------------|
 | externalStorage.createDatabase | bool | `false` |  |
 | externalStorage.database | string | `""` |  |
-| externalStorage.dsn | string | `""` |  |
+| externalStorage.dsn | string/object | `""` | Storage DSN or a Secret reference. If it is set, then the host, port, user, password, and database parameters will be ignored |
+| externalStorage.dsn.secretKeyRef.key | string | `""` | Key in the existing Secret containing the storage DSN |
+| externalStorage.dsn.secretKeyRef.name | string | `""` | Name of an existing Secret containing the storage DSN |
 | externalStorage.host | string | `""` |  |
 | externalStorage.password | string | `""` |  |
 | externalStorage.port | string | `nil` |  |

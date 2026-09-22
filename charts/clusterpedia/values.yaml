@@ -84,8 +84,8 @@ externalStorage:
   ## @param externalStorage.type Select which database backend Clusterpedia will use. Can be 'postgres' or 'mysql'
   ##
   type: ""
-  ## @dsn externalStorage.type for storage dsn. If it is set, then the host, port, user, database parameters will be ignored
-  ## It only works for mysql
+  ## @param externalStorage.dsn Storage DSN or a Secret reference. If it is set, then the host, port, user, password, and database parameters will be ignored
+  ## It works for mysql and postgres. Use dsn.secretKeyRef to read the DSN from an existing Secret.
   ##
   dsn: ""
   ## @param externalStorage.host for a custom host
